@@ -32,6 +32,32 @@ REQUIRE_EMAIL_VERIFICATION = true  -> email users must click the link in the
 verification email before they can enter (Google users are already verified).
 Set to false to let email users in straight after registering.
 
+PASSWORD ATTEMPT LIMITER
+After 5 wrong passwords for the same email address, sign-in is blocked for 5
+minutes. The count and the lock expiry are kept on the server in Netlify Blobs
+(no setup needed; it is included with Netlify Functions), so reloading the page,
+reopening the browser or coming back later does not clear them. The countdown in
+the login box is only a display of the server's remaining time.
+The site calls /.netlify/functions/login-attempts. To test locally you need
+Netlify Functions running, so use:
+     npx netlify-cli dev
+(plain "python -m http.server" serves the pages but has no function, so sign-in
+works there WITHOUT any attempt counting or countdown).
+
+If the countdown never appears, open the browser console and the Network tab.
+The POST to /.netlify/functions/login-attempts tells you which part is missing:
+  404 -> the function was not deployed (redeploy it, see the note below)
+  503 -> Netlify Blobs is not available to the function
+  no request at all -> an older cached copy of sonicframe-auth.js is being served
+Deploy with "npx netlify-cli deploy --prod" or via a Git-connected site. Do not
+drag and drop the folder for this change: manual deploys skip the build command,
+so @netlify/blobs is not installed for the function.
+One limit worth knowing: Firebase checks the password in the browser, so the
+limiter counts attempts made through this login form. Someone calling Firebase's
+API directly, bypassing the site, is subject to Firebase's own rate limits
+instead. Real server-only enforcement would need the Firebase Admin SDK and a
+service account.
+
 IMPORTANT: WHAT THIS DOES AND DOES NOT PROTECT
 The lock hides the pages and features from anyone not signed in. Because this is a
 static site, the HTML files themselves can still be downloaded by someone who knows
@@ -42,8 +68,9 @@ sends the signed-in user's Firebase ID token to your endpoint as
 (verifyIdToken) and reject requests without a valid token.
 
 FILES ADDED
-firebase-config.js    your Firebase settings and options
-sonicframe-auth.js    login logic and the page lock
+firebase-config.js            your Firebase settings and options
+sonicframe-auth.js            login logic and the page lock
+netlify/functions/login-attempts.js  failed-password counter and 5-minute lock
 SETUP-AUTH.txt        this guide
 
 DEPLOYING TO NETLIFY (frontend only)
