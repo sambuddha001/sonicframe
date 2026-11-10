@@ -1,0 +1,1592 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SonicFrame Studio | TetraByte</title>
+  <link rel="icon" type="image/png" href="logo-edited.png">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+    :root {
+      --bg: #080b12;
+      --panel: #101622;
+      --panel2: #141d2b;
+      --line: #263247;
+      --muted: #8491a7;
+      --text: #eef3ff;
+      --cyan: #5ce1e6;
+      --violet: #a78bfa;
+      --orange: #ffad66;
+      --green: #79e2b0;
+      --red: #ff7185
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      margin: 0;
+      background: radial-gradient(circle at 15% 0%, #17223a 0, transparent 32%), radial-gradient(circle at 90% 12%, #211a3b 0, transparent 28%), var(--bg);
+      color: var(--text);
+      font-family: Manrope, Arial, sans-serif;
+      min-height: 100vh
+    }
+
+    button,
+    input,
+    select {
+      font: inherit
+    }
+
+    button {
+      cursor: pointer;
+      border: 0;
+      color: inherit
+    }
+
+    .app {
+      max-width: 1500px;
+      margin: auto;
+      padding: 24px 28px 50px
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 28px
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 13px
+    }
+
+    .logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .brand h1 {
+      font-size: 19px;
+      letter-spacing: -.7px;
+      margin: 0
+    }
+
+    .brand p {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 2px;
+      margin: 3px 0 0;
+      text-transform: uppercase
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .status {
+      font: 11px 'DM Mono';
+      color: var(--green);
+      padding: 9px 12px;
+      border: 1px solid #79e2b044;
+      border-radius: 30px;
+      background: #79e2b00c
+    }
+
+    .ghost,
+    .primary,
+    .small {
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-weight: 800;
+      font-size: 12px;
+      transition: .25s
+    }
+
+    .ghost {
+      background: #ffffff08;
+      border: 1px solid var(--line)
+    }
+
+    .ghost:hover {
+      border-color: var(--cyan);
+      transform: translateY(-2px)
+    }
+
+    .primary {
+      background: linear-gradient(110deg, var(--cyan), #9cf0ce);
+      color: #071018;
+      box-shadow: 0 8px 25px #5ce1e622
+    }
+
+    .primary:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.08)
+    }
+
+    .small {
+      padding: 8px 11px;
+      background: #202b3c;
+      border: 1px solid #34445d
+    }
+
+    .eyebrow {
+      color: var(--cyan);
+      font: 10px 'DM Mono';
+      letter-spacing: 2px;
+      text-transform: uppercase
+    }
+
+    .hero {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 20px;
+      margin-bottom: 22px
+    }
+
+    .hero h2 {
+      font-size: clamp(28px, 4vw, 44px);
+      letter-spacing: -2px;
+      line-height: 1.05;
+      margin: 9px 0
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 13px;
+      max-width: 650px;
+      line-height: 1.7;
+      margin: 0
+    }
+
+    .hero-note {
+      font: 10px 'DM Mono';
+      color: #a6b1c5;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 15px;
+      white-space: nowrap
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1.65fr) minmax(300px, .85fr);
+      gap: 17px
+    }
+
+    .panel {
+      background: linear-gradient(145deg, #141d2aee, #0e1520f2);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: 0 18px 55px #0003;
+      overflow: hidden
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line)
+    }
+
+    .panel-head h3 {
+      margin: 0;
+      font-size: 13px;
+      letter-spacing: .2px
+    }
+
+    .panel-head span {
+      font: 10px 'DM Mono';
+      color: var(--muted)
+    }
+
+    .video-area {
+      padding: 16px
+    }
+
+    .dropzone {
+      position: relative;
+      min-height: 300px;
+      aspect-ratio: 16/8.7;
+      background: linear-gradient(135deg, #101a29, #0a1019);
+      border: 1px dashed #43536c;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      transition: .25s
+    }
+
+    .dropzone.drag {
+      border-color: var(--cyan);
+      background: #5ce1e60b
+    }
+
+    .dropzone video {
+      width: 100%;
+      height: 100%;
+      max-height: 470px;
+      object-fit: contain;
+      background: #05080d;
+      display: none
+    }
+
+    .empty {
+      padding: 30px;
+      text-align: center
+    }
+
+    .upload-icon {
+      width: 55px;
+      height: 55px;
+      border: 1px solid #5ce1e655;
+      border-radius: 17px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 14px;
+      color: var(--cyan);
+      font-size: 24px;
+      background: #5ce1e610
+    }
+
+    .empty h3 {
+      font-size: 15px;
+      margin: 0 0 7px
+    }
+
+    .empty p {
+      font-size: 11px;
+      color: var(--muted);
+      margin: 0 0 17px
+    }
+
+    .file-input {
+      display: none
+    }
+
+    .video-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font: 10px 'DM Mono';
+      margin-top: 11px;
+      flex-wrap: wrap
+    }
+
+    .transport {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px
+    }
+
+    .transport button {
+      width: 37px;
+      height: 34px;
+      border-radius: 9px;
+      background: #202b3c;
+      border: 1px solid #34445d
+    }
+
+    .transport button.play {
+      background: var(--cyan);
+      color: #061117;
+      font-size: 15px
+    }
+
+    .time {
+      font: 11px 'DM Mono';
+      color: #cbd5e7;
+      margin-left: 5px
+    }
+
+    .seek {
+      flex: 1;
+      accent-color: var(--cyan);
+      min-width: 50px
+    }
+
+    .right-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 17px
+    }
+
+    .settings {
+      padding: 16px 18px
+    }
+
+    .field {
+      margin-bottom: 15px
+    }
+
+    .field:last-child {
+      margin-bottom: 0
+    }
+
+    .field label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #c6d0e1;
+      margin-bottom: 8px
+    }
+
+    .field label small {
+      color: var(--muted);
+      font: 10px 'DM Mono'
+    }
+
+    .field select,
+    .field input[type=range] {
+      width: 100%
+    }
+
+    .field select {
+      background: #0b121d;
+      color: var(--text);
+      border: 1px solid #34445d;
+      border-radius: 9px;
+      padding: 10px;
+      font-size: 11px
+    }
+
+    .field input[type=range] {
+      accent-color: var(--cyan)
+    }
+
+    .analyze {
+      width: 100%;
+      margin-top: 17px;
+      padding: 13px
+    }
+
+    .hint {
+      font-size: 10px;
+      color: var(--muted);
+      line-height: 1.6;
+      margin: 10px 0 0
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 9px;
+      padding: 13px 16px
+    }
+
+    .metric {
+      background: #0b121d;
+      border: 1px solid #263247;
+      border-radius: 11px;
+      padding: 12px
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 21px;
+      letter-spacing: -1px
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font: 9px 'DM Mono';
+      margin-top: 4px;
+      text-transform: uppercase
+    }
+
+    .metric:nth-child(1) strong {
+      color: var(--cyan)
+    }
+
+    .metric:nth-child(2) strong {
+      color: var(--orange)
+    }
+
+    .metric:nth-child(3) strong {
+      color: var(--violet)
+    }
+
+    .timeline-panel {
+      margin-top: 17px
+    }
+
+    .timeline-wrap {
+      padding: 17px 18px 20px
+    }
+
+    .timeline-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 13px;
+      gap: 10px
+    }
+
+    .timeline-top p {
+      font-size: 11px;
+      color: var(--muted);
+      margin: 0
+    }
+
+    .legend {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap
+    }
+
+    .legend span {
+      font: 9px 'DM Mono';
+      color: var(--muted)
+    }
+
+    .dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      margin-right: 5px
+    }
+
+    .track {
+      margin: 12px 0 17px
+    }
+
+    .track-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 7px;
+      font-size: 10px;
+      color: #cbd5e7
+    }
+
+    .track-title small {
+      font: 9px 'DM Mono';
+      color: var(--muted)
+    }
+
+    .track-lane {
+      height: 42px;
+      background: #090f18;
+      border: 1px solid #263247;
+      border-radius: 9px;
+      position: relative;
+      overflow: hidden;
+      background-image: linear-gradient(90deg, #ffffff08 1px, transparent 1px);
+      background-size: 5% 100%
+    }
+
+    .event {
+      position: absolute;
+      top: 5px;
+      height: 30px;
+      min-width: 4px;
+      border-radius: 5px;
+      opacity: .9;
+      box-shadow: 0 0 14px currentColor
+    }
+
+    .event.impact {
+      background: var(--orange);
+      color: var(--orange)
+    }
+
+    .event.motion {
+      background: var(--cyan);
+      color: var(--cyan)
+    }
+
+    .event.ambience {
+      background: var(--violet);
+      color: var(--violet);
+      opacity: .32
+    }
+
+    .playhead {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: #fff;
+      z-index: 5;
+      box-shadow: 0 0 9px white;
+      pointer-events: none
+    }
+
+    .playhead:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -4px;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 6px solid white
+    }
+
+    .ruler {
+      display: flex;
+      justify-content: space-between;
+      color: #64738b;
+      font: 9px 'DM Mono';
+      padding: 0 2px
+    }
+
+    .event-list {
+      border-top: 1px solid var(--line);
+      margin-top: 15px;
+      padding-top: 14px
+    }
+
+    .event-list h4 {
+      font-size: 11px;
+      margin: 0 0 9px
+    }
+
+    .event-row {
+      display: grid;
+      grid-template-columns: 65px 1fr auto;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid #ffffff09;
+      font-size: 10px;
+      align-items: center
+    }
+
+    .event-row time {
+      font: 10px 'DM Mono';
+      color: var(--cyan)
+    }
+
+    .event-row span {
+      color: #cbd5e7
+    }
+
+    .event-row small {
+      color: var(--muted);
+      font: 9px 'DM Mono'
+    }
+
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 17px;
+      margin-top: 17px
+    }
+
+    .stem-list {
+      padding: 7px 17px 15px
+    }
+
+    .stem {
+      display: grid;
+      grid-template-columns: 22px 1fr 90px 35px;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 0;
+      border-bottom: 1px solid #ffffff0c
+    }
+
+    .stem:last-child {
+      border: 0
+    }
+
+    .stem input {
+      accent-color: var(--cyan)
+    }
+
+    .stem b {
+      font-size: 11px
+    }
+
+    .stem small {
+      display: block;
+      color: var(--muted);
+      font-size: 9px;
+      margin-top: 3px
+    }
+
+    .stem input[type=range] {
+      width: 90px;
+      accent-color: var(--violet)
+    }
+
+    .stem em {
+      font: 9px 'DM Mono';
+      color: var(--muted);
+      font-style: normal;
+      text-align: right
+    }
+
+    .log {
+      padding: 13px 17px;
+      font: 10px 'DM Mono';
+      color: #9aa9bf;
+      line-height: 1.9;
+      max-height: 220px;
+      overflow: auto
+    }
+
+    .log .ok {
+      color: var(--green)
+    }
+
+    .log .warn {
+      color: var(--orange)
+    }
+
+    .log .cyan {
+      color: var(--cyan)
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      color: #627089;
+      font: 9px 'DM Mono';
+      margin-top: 22px;
+      flex-wrap: wrap
+    }
+
+    @media(max-width:900px) {
+      .workspace {
+        grid-template-columns: 1fr
+      }
+
+      .right-stack {
+        display: grid;
+        grid-template-columns: 1fr 1fr
+      }
+
+      .bottom-grid {
+        grid-template-columns: 1fr
+      }
+    }
+
+    @media(max-width:600px) {
+      .app {
+        padding: 17px 13px 35px
+      }
+
+      .hero {
+        display: block
+      }
+
+      .hero-note {
+        display: inline-block;
+        margin-top: 15px
+      }
+
+      .header-right .status {
+        display: none
+      }
+
+      .right-stack {
+        display: flex
+      }
+
+      .dropzone {
+        min-height: 220px
+      }
+
+      .stem {
+        grid-template-columns: 20px 1fr 70px 30px
+      }
+
+      .stem input[type=range] {
+        width: 70px
+      }
+
+      .metrics {
+        gap: 6px;
+        padding: 10px
+      }
+
+      .metric {
+        padding: 10px
+      }
+
+      .metric strong {
+        font-size: 18px
+      }
+
+      .timeline-wrap {
+        padding: 14px 12px
+      }
+    }
+  </style>
+
+  <style>
+    /* TetraByte visual identity: graphite, black and moving metallic light */
+    :root {
+      --bg: #08090b;
+      --panel: #111316;
+      --panel2: #191c20;
+      --line: #30343b;
+      --muted: #9299a4;
+      --text: #f1f2f4;
+      --cyan: #c5cbd2;
+      --violet: #858d99;
+      --orange: #d7a77b;
+      --green: #a8c9b4;
+      --red: #d88791;
+    }
+
+    body {
+      background-color: #08090b;
+      background-image:
+        radial-gradient(ellipse at 12% 8%, #727b891c 0, transparent 34%),
+        radial-gradient(ellipse at 88% 20%, #aab3c00f 0, transparent 31%),
+        radial-gradient(ellipse at 52% 95%, #626b7717 0, transparent 40%);
+      background-attachment: fixed;
+    }
+
+    body:before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+      opacity: .24;
+      background-image: linear-gradient(#aab2bf0a 1px, transparent 1px), linear-gradient(90deg, #aab2bf0a 1px, transparent 1px);
+      background-size: 54px 54px;
+      mask-image: linear-gradient(to bottom, black, transparent 88%);
+      animation: gridDrift 28s linear infinite;
+    }
+
+    body:after {
+      content: "";
+      position: fixed;
+      width: 55vw;
+      height: 55vw;
+      max-width: 720px;
+      max-height: 720px;
+      border-radius: 50%;
+      top: -28vw;
+      right: -13vw;
+      pointer-events: none;
+      z-index: -1;
+      background: radial-gradient(circle, #cbd2dc12 0, #8d98a008 42%, transparent 70%);
+      filter: blur(8px);
+      animation: orbFloat 16s ease-in-out infinite alternate;
+    }
+
+    @keyframes gridDrift {
+      from {
+        transform: translateY(0)
+      }
+
+      to {
+        transform: translateY(54px)
+      }
+    }
+
+    @keyframes orbFloat {
+      from {
+        transform: translate(-3vw, 0) scale(.9)
+      }
+
+      to {
+        transform: translate(-13vw, 18vh) scale(1.18)
+      }
+    }
+
+    .app {
+      position: relative
+    }
+
+    .teambar {
+      min-height: 62px;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 10px 15px;
+      margin: 0 0 22px;
+      border: 1px solid #444a54;
+      border-radius: 15px;
+      background: linear-gradient(105deg, #1c1f24ed, #101215eF 62%, #202329e8);
+      box-shadow: 0 12px 35px #0007, inset 0 1px #ffffff0b;
+      backdrop-filter: blur(18px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .teambar:after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 25%;
+      left: -35%;
+      background: linear-gradient(90deg, transparent, #ffffff09, transparent);
+      transform: skewX(-22deg);
+      animation: barSheen 9s ease-in-out infinite;
+      pointer-events: none
+    }
+
+    @keyframes barSheen {
+
+      0%,
+      55% {
+        left: -35%
+      }
+
+      100% {
+        left: 125%
+      }
+    }
+
+    .team-mark {
+      width: 31px;
+      height: 31px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 3px;
+      transform: rotate(45deg);
+      padding: 4px;
+      border: 1px solid #cbd1d866;
+      border-radius: 8px
+    }
+
+    .team-mark span {
+      background: linear-gradient(145deg, #f0f2f5, #737b87);
+      border-radius: 2px
+    }
+
+    .team-mark span:nth-child(2),
+    .team-mark span:nth-child(3) {
+      opacity: .48
+    }
+
+    .team-name {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 145px
+    }
+
+    .team-name strong {
+      font-size: 13px;
+      letter-spacing: 1.8px;
+      font-weight: 800
+    }
+
+    .team-name small {
+      font: 8px 'DM Mono';
+      letter-spacing: 1.35px;
+      color: #929ba8
+    }
+
+    .team-nav {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: auto
+    }
+
+    .team-nav a {
+      color: #aeb5c0;
+      text-decoration: none;
+      font: 9px 'DM Mono';
+      letter-spacing: 1.2px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      transition: .2s
+    }
+
+    .team-nav a:hover {
+      color: #fff;
+      background: #ffffff0c
+    }
+
+    .teambar-right {
+      font: 9px 'DM Mono';
+      letter-spacing: .7px;
+      color: #aeb5c0;
+      border-left: 1px solid #414751;
+      padding-left: 15px;
+      white-space: nowrap
+    }
+
+    .teambar-right i {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: #b8c7bd;
+      border-radius: 50%;
+      margin-right: 6px;
+      box-shadow: 0 0 10px #b8c7bd
+    }
+
+    .eyebrow {
+      color: #c4cbd3
+    }
+
+    .primary {
+      background: linear-gradient(110deg, #e0e4e9, #9ca5b0);
+      color: #101216;
+      box-shadow: 0 8px 25px #d5dbe411
+    }
+
+    .primary:hover {
+      filter: brightness(1.12)
+    }
+
+    .dropzone {
+      background: linear-gradient(135deg, #171a1f, #0b0d10);
+      border-color: #505762
+    }
+
+    .dropzone.drag {
+      border-color: #d5dbe2;
+      background: #cbd2dc0b
+    }
+
+    .upload-icon {
+      border-color: #cbd2dc55;
+      color: #d7dce3;
+      background: #cbd2dc0c
+    }
+
+    .transport button.play {
+      background: #d7dce3;
+      color: #101216
+    }
+
+    .seek,
+    .field input[type=range],
+    .stem input[type=range] {
+      accent-color: #cbd2dc
+    }
+
+    .metric:nth-child(1) strong {
+      color: #d5dbe2
+    }
+
+    .metric:nth-child(2) strong {
+      color: #d7a77b
+    }
+
+    .metric:nth-child(3) strong {
+      color: #aeb7c3
+    }
+
+    .event.motion {
+      background: #cbd2dc;
+      color: #cbd2dc
+    }
+
+    .event.impact {
+      background: #d7a77b;
+      color: #d7a77b
+    }
+
+    .event.ambience {
+      background: #929ba8;
+      color: #929ba8
+    }
+
+    .event-row time {
+      color: #d2d8df
+    }
+
+    .status {
+      color: #b8c9be;
+      border-color: #a8c9b444;
+      background: #a8c9b40b
+    }
+
+    @media(max-width:600px) {
+      .teambar {
+        gap: 9px;
+        padding: 9px
+      }
+
+      .team-name {
+        min-width: 0
+      }
+
+      .team-nav {
+        gap: 0
+      }
+
+      .team-nav a {
+        padding: 8px 6px;
+        font-size: 8px
+      }
+
+      .teambar-right {
+        display: none
+      }
+    }
+
+    /* SonicFrame monochrome polish and local navigation */
+    .team-brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      text-decoration: none;
+      color: inherit;
+      flex-shrink: 0
+    }
+
+    .team-nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      flex-wrap: wrap
+    }
+
+    .team-nav a {
+      position: relative;
+      text-decoration: none;
+      color: #d2d6dc;
+      font: 700 10px 'DM Mono';
+      letter-spacing: .6px;
+      padding: 11px 12px;
+      border: 1px solid transparent;
+      border-radius: 9px;
+      transition: all .22s ease;
+      white-space: nowrap
+    }
+
+    .team-nav a:hover,
+    .team-nav a:focus-visible {
+      color: #fff;
+      border-color: #aeb6c244;
+      background: linear-gradient(120deg, #ffffff16, #ffffff05);
+      box-shadow: 0 0 18px #dce4ef20, inset 0 0 12px #ffffff08;
+      transform: translateY(-2px);
+      outline: none
+    }
+
+    .team-nav a:after {
+      content: '';
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 5px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #f2f4f7, transparent);
+      transform: scaleX(0);
+      transition: transform .22s
+    }
+
+    .team-nav a:hover:after {
+      transform: scaleX(1)
+    }
+
+    .teambar {
+      position: relative;
+      z-index: 4;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 12px 16px;
+      margin: -24px -28px 25px;
+      background: linear-gradient(105deg, #101216f5, #1a1d22f2, #0c0e11f5);
+      border: 1px solid #454b55;
+      border-top: 0;
+      border-radius: 0 0 14px 14px;
+      box-shadow: 0 12px 38px #0008;
+      backdrop-filter: blur(15px)
+    }
+
+    .team-mark {
+      filter: grayscale(1);
+      box-shadow: 0 0 20px #e7edf522
+    }
+
+    .team-name strong {
+      color: #f4f5f7
+    }
+
+    .team-name small {
+      color: #9299a3
+    }
+
+    .teambar-right {
+      font: 9px 'DM Mono';
+      color: #c5cbd2;
+      white-space: nowrap
+    }
+
+    body {
+      background-image: radial-gradient(ellipse at 10% 0%, #aeb7c018 0, transparent 35%), radial-gradient(ellipse at 90% 14%, #ffffff0c 0, transparent 32%), linear-gradient(135deg, #070809, #15171b 48%, #08090b);
+      background-attachment: fixed
+    }
+
+    body:after {
+      content: '♫  ♪  ♬  ♩';
+      position: fixed;
+      z-index: -1;
+      right: 5vw;
+      top: 16vh;
+      font-size: clamp(38px, 7vw, 92px);
+      letter-spacing: 24px;
+      color: #e8edf5;
+      opacity: .055;
+      text-shadow: 0 0 18px #fff, 0 0 50px #cbd2dc;
+      pointer-events: none;
+      animation: musicFloat 10s ease-in-out infinite alternate
+    }
+
+    @keyframes noteDrift {
+      from {
+        transform: translate3d(0, 0, 0) rotate(-8deg)
+      }
+
+      to {
+        transform: translate3d(14px, -22px, 0) rotate(12deg)
+      }
+    }
+
+    @keyframes musicFloat {
+      from {
+        transform: translateY(-12px) rotate(-5deg);
+        opacity: .035
+      }
+
+      to {
+        transform: translateY(24px) rotate(6deg);
+        opacity: .095
+      }
+    }
+
+    .module-hub {
+      margin-top: 22px;
+      padding: 22px;
+      border: 1px solid #363b44;
+      border-radius: 17px;
+      background: linear-gradient(135deg, #171a1fdd, #0d0f12ee)
+    }
+
+    .module-hub h2 {
+      font-size: 22px;
+      margin: 8px 0 18px
+    }
+
+    .module-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px
+    }
+
+    .module-card {
+      min-height: 145px;
+      padding: 17px;
+      border: 1px solid #414751;
+      border-radius: 13px;
+      text-decoration: none;
+      color: #f1f3f5;
+      background: linear-gradient(145deg, #20242a, #111317);
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      transition: transform .22s, border-color .22s, box-shadow .22s
+    }
+
+    .module-card:hover {
+      transform: translateY(-5px);
+      border-color: #d6dce5;
+      box-shadow: 0 12px 32px #dce4ef16, 0 0 18px #ffffff0c
+    }
+
+    .module-card span {
+      font-size: 25px;
+      color: #e2e6eb;
+      text-shadow: 0 0 14px #fff9
+    }
+
+    .module-card b {
+      font-size: 12px
+    }
+
+    .module-card small {
+      font-size: 10px;
+      color: #9da5b0;
+      line-height: 1.5
+    }
+
+    .module-card em {
+      margin-top: auto;
+      font: 9px 'DM Mono';
+      font-style: normal;
+      color: #e3e7ed;
+      letter-spacing: 1px
+    }
+
+    .primary {
+      background: linear-gradient(110deg, #f0f2f5, #8e969f);
+      color: #111317;
+      box-shadow: 0 8px 25px #d5dbe422
+    }
+
+    @media(max-width:1050px) {
+      .teambar {
+        flex-wrap: wrap
+      }
+
+      .team-nav {
+        order: 3;
+        width: 100%;
+        justify-content: flex-start
+      }
+
+      .module-grid {
+        grid-template-columns: repeat(2, 1fr)
+      }
+    }
+
+    @media(max-width:600px) {
+      .teambar {
+        margin: -17px -13px 20px;
+        padding: 10px
+      }
+
+      .team-nav {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        justify-content: flex-start
+      }
+
+      .team-nav a {
+        font-size: 9px;
+        padding: 9px
+      }
+
+      .teambar-right {
+        display: none
+      }
+
+      .module-grid {
+        grid-template-columns: 1fr
+      }
+
+      .module-hub {
+        padding: 15px
+      }
+    }
+  </style>
+
+  <style>
+    html.sf-auth-pending body {
+      visibility: hidden
+    }
+
+    html.sf-auth-pending:before {
+      content: "♪";
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-size: 46px;
+      color: #fff;
+      background: #070809;
+      z-index: 2147483647;
+      text-shadow: 0 0 22px #fff;
+      visibility: visible
+    }
+  </style>
+  <script>document.documentElement.className += " sf-auth-pending"; document.documentElement.setAttribute("data-sf-protected", ""); setTimeout(function () { if (/sf-auth-pending/.test(document.documentElement.className)) location.replace("index.html?login=1&reason=timeout") }, 12000)</script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="sonicframe-auth.js"></script>
+</head>
+
+<body>
+  <div class="app">
+    <div class="teambar">
+      <a class="team-brand" href="index.html">
+        <div class="team-mark"><span></span><span></span><span></span><span></span></div>
+        <div class="team-name"><strong>TetraByte</strong><small>CREATIVE TECHNOLOGY TEAM</small></div>
+      </a>
+      <nav class="team-nav"><a href="index.html">OVERVIEW</a><a href="studio.html">STUDIO</a><a
+          href="motion.html">MOTION</a><a href="foley.html">FOLEY</a><a href="timeline.html">TIMELINE</a><a
+          href="mixer.html">MIXER</a><a href="chatbot.html">AI CO-PILOT</a></nav>
+      <div class="teambar-right"><i></i> LOCAL WORKSPACE</div>
+    </div>
+    <header>
+      <div class="brand">
+        <img src="logo-edited.png" alt="SonicFrame Logo" class="logo">
+        <div>
+          <h1>SonicFrame</h1>
+          <p>A Project of TetraByte</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="status">● LOCAL ANALYSIS MODE</div><button class="ghost" id="resetBtn">Reset session</button>
+      </div>
+    </header>
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Soundscapes & composition · Creative co-pilot</div>
+        <h2>Let motion write<br>the soundtrack.</h2>
+        <p>Drop in a silent animation. SonicFrame scans visual energy, finds impact-like moments and builds a
+          synchronized procedural soundscape you can shape on a timeline.</p>
+      </div>
+      <div class="hero-note">FRAME ANALYSIS <span style="color:var(--cyan)">/</span> FOLEY <span
+          style="color:var(--cyan)">/</span> ADAPTIVE SCORE</div>
+    </section>
+    <div class="workspace">
+      <section class="panel" id="studio">
+        <div class="panel-head">
+          <h3>01 / Visual source</h3><span>MP4 · WEBM · MOV*</span>
+        </div>
+        <div class="video-area">
+          <div class="dropzone" id="dropzone">
+            <video id="video" playsinline></video>
+            <div class="empty" id="empty">
+              <div class="upload-icon">↥</div>
+              <h3>Drop your silent clip here</h3>
+              <p>Use a short clip (up to 15 seconds recommended) for a quick local analysis.</p><button class="primary"
+                id="browseBtn">Choose video</button><input class="file-input" id="fileInput" type="file"
+                accept="video/*">
+            </div>
+          </div>
+          <div class="video-meta"><span id="fileName">NO SOURCE LOADED</span><span
+              id="durationLabel">00:00.000</span><span id="resolution">—</span></div>
+          <div class="transport"><button id="backBtn" title="Back 1 second">−1</button><button class="play"
+              id="playBtn">▶</button><button id="forwardBtn" title="Forward 1 second">+1</button><input class="seek"
+              id="seek" type="range" min="0" max="1000" value="0"><span class="time" id="clock">00:00.000</span></div>
+        </div>
+      </section>
+      <div class="right-stack">
+        <section class="panel">
+          <div class="panel-head">
+            <h3>02 / Analysis controls</h3><span>CLIENT-SIDE</span>
+          </div>
+          <div class="settings">
+            <div class="field"><label>Motion sensitivity <small id="sensitivityVal">62%</small></label><input
+                id="sensitivity" type="range" min="15" max="95" value="62"></div>
+            <div class="field"><label>Analysis sampling</label><select id="sampling">
+                <option value="8">Fast · every 8 frames</option>
+                <option value="4" selected>Balanced · every 4 frames</option>
+                <option value="2">Detailed · every 2 frames</option>
+              </select></div>
+            <div class="field"><label>Score character</label><select id="mood">
+                <option value="cinematic">Cinematic tension</option>
+                <option value="playful">Playful / bright</option>
+                <option value="ambient">Ambient / spacious</option>
+                <option value="action">Action / percussive</option>
+              </select></div>
+            <button class="primary analyze" id="analyzeBtn">✦ Analyze motion & build score</button>
+            <p class="hint">Analysis runs in your browser using frame-difference and block-matching motion estimates. No
+              video is uploaded.</p>
+          </div>
+        </section>
+        <section class="panel">
+          <div class="panel-head">
+            <h3>03 / Motion telemetry</h3><span id="analysisState">AWAITING CLIP</span>
+          </div>
+          <div class="metrics">
+            <div class="metric"><strong id="motionMetric">—</strong><span>Motion energy</span></div>
+            <div class="metric"><strong id="impactMetric">—</strong><span>Impact cues</span></div>
+            <div class="metric"><strong id="shiftMetric">—</strong><span>Scene shifts</span></div>
+          </div>
+        </section>
+      </div>
+    </div>
+    <section class="panel timeline-panel" id="timeline">
+      <div class="panel-head">
+        <h3>04 / Adaptive audio timeline</h3><span id="timelineState">NO GENERATED STEMS</span>
+      </div>
+      <div class="timeline-wrap">
+        <div class="timeline-top">
+          <p>Detected events are mapped to procedural sound cues. Press play to hear the synchronized mix.</p>
+          <div class="legend"><span><i class="dot" style="background:var(--orange)"></i>Impact</span><span><i
+                class="dot" style="background:var(--cyan)"></i>Motion</span><span><i class="dot"
+                style="background:var(--violet)"></i>Atmosphere</span></div>
+        </div>
+        <div id="tracks">
+          <div class="track">
+            <div class="track-title"><span>VISUAL MOTION</span><small>Awaiting analysis</small></div>
+            <div class="track-lane"></div>
+          </div>
+          <div class="track">
+            <div class="track-title"><span>FOLEY EVENTS</span><small>Awaiting analysis</small></div>
+            <div class="track-lane"></div>
+          </div>
+          <div class="track">
+            <div class="track-title"><span>ADAPTIVE SCORE</span><small>Awaiting analysis</small></div>
+            <div class="track-lane"></div>
+          </div>
+        </div>
+        <div class="ruler"><span>00:00</span><span>25%</span><span>50%</span><span>75%</span><span>END</span></div>
+        <div class="event-list">
+          <h4>GENERATED CUE SHEET</h4>
+          <div id="eventList" style="color:var(--muted);font-size:10px">Analyze a clip to populate frame-aligned cues.
+          </div>
+        </div>
+      </div>
+    </section>
+    <div class="bottom-grid">
+      <section class="panel" id="mixer">
+        <div class="panel-head">
+          <h3>05 / Stem mixer</h3><span>REAL-TIME WEB AUDIO</span>
+        </div>
+        <div class="stem-list">
+          <div class="stem"><input type="checkbox" id="ambienceOn" checked>
+            <div><b>Atmosphere</b><small>Continuous evolving pad / air</small></div><input type="range" id="ambienceVol"
+              min="0" max="100" value="30"><em id="ambiencePct">30%</em>
+          </div>
+          <div class="stem"><input type="checkbox" id="pulseOn" checked>
+            <div><b>Motion pulse</b><small>Soft synth pulse on movement</small></div><input type="range" id="pulseVol"
+              min="0" max="100" value="45"><em id="pulsePct">45%</em>
+          </div>
+          <div class="stem"><input type="checkbox" id="foleyOn" checked>
+            <div><b>Impact Foley</b><small>Low thump + bright transient</small></div><input type="range" id="foleyVol"
+              min="0" max="100" value="70"><em id="foleyPct">70%</em>
+          </div>
+          <div class="stem"><input type="checkbox" id="textureOn" checked>
+            <div><b>Texture</b><small>Noise shimmer / scene transitions</small></div><input type="range" id="textureVol"
+              min="0" max="100" value="25"><em id="texturePct">25%</em>
+          </div>
+        </div>
+      </section>
+      <section class="panel">
+        <div class="panel-head">
+          <h3>06 / Co-pilot activity</h3><span>EVENT ENGINE</span>
+        </div>
+        <div class="log" id="log">
+          <div><span class="cyan">[01:00:00]</span> SonicFrame engine initialized.</div>
+          <div><span class="ok">[READY]</span> Waiting for a video source.</div>
+          <div>[INFO] Procedural audio is synthesized locally with Web Audio API.</div>
+        </div>
+      </section>
+    </div>
+    <div class="footer"><span>MOTION2STEM · CREATIVE AUDIO PROTOTYPE</span><span>*Browser-supported video formats · Best
+        in Chrome / Edge</span><span>LOCAL-FIRST · NO UPLOAD</span></div>
+  </div>
+  <script>
+      (() => {
+        const $ = id => document.getElementById(id);
+        // Decorative musical glyphs (non-interactive).
+        const glyphs = ['♫', '♪', '♬', '♩', '𝄞']; for (let i = 0; i < 12; i++) { const g = document.createElement('span'); g.className = 'floating-note'; g.textContent = glyphs[i % glyphs.length]; g.style.cssText = `position:fixed;z-index:-1;left:${(i * 37) % 96}%;top:${(i * 19) % 92}%;font-size:${16 + (i % 4) * 10}px;color:#e6ebf2;opacity:.035;text-shadow:0 0 16px #fff;pointer-events:none;animation:noteDrift ${9 + i % 5}s ease-in-out ${i * .3}s infinite alternate`; document.body.appendChild(g) }
+
+        const video = $('video'), fileInput = $('fileInput'), dropzone = $('dropzone'), empty = $('empty');
+        let objectURL = null, duration = 0, events = [], motionSamples = [], audioCtx = null, master = null, playing = false, raf = 0, scheduled = [], lastCue = -1, analysisDone = false;
+        const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+        const fmt = t => { if (!isFinite(t)) t = 0; let m = Math.floor(t / 60), s = Math.floor(t % 60), ms = Math.floor((t % 1) * 1000); return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}.${String(ms).padStart(3, '0')}` };
+        function log(msg, cls = '') { let d = document.createElement('div'); d.innerHTML = `<span class="${cls}">[${new Date().toLocaleTimeString()}]</span> ${msg}`; $('log').prepend(d) }
+        function loadFile(file) { if (!file || !file.type.startsWith('video/')) { log('Please select a supported video file.', 'warn'); return } if (objectURL) URL.revokeObjectURL(objectURL); objectURL = URL.createObjectURL(file); video.src = objectURL; video.style.display = 'block'; empty.style.display = 'none'; $('fileName').textContent = file.name.toUpperCase(); analysisDone = false; events = []; $('analysisState').textContent = 'SOURCE LOADED'; $('timelineState').textContent = 'READY TO ANALYZE'; $('eventList').textContent = 'Analyze this clip to generate cues.'; video.onloadedmetadata = () => { duration = video.duration; $('durationLabel').textContent = fmt(duration); $('resolution').textContent = `${video.videoWidth} × ${video.videoHeight}`; $('seek').value = 0; $('seek').max = 1000; log(`Loaded ${file.name} · ${duration.toFixed(2)} seconds.`, 'ok'); renderTracks() } }
+        $('browseBtn').onclick = () => $('fileInput').click(); fileInput.onchange = e => loadFile(e.target.files[0]);
+        ['dragenter', 'dragover'].forEach(ev => dropzone.addEventListener(ev, e => { e.preventDefault(); dropzone.classList.add('drag') }));
+        ['dragleave', 'drop'].forEach(ev => dropzone.addEventListener(ev, e => { e.preventDefault(); dropzone.classList.remove('drag') }));
+        dropzone.addEventListener('drop', e => loadFile(e.dataTransfer.files[0]));
+        video.addEventListener('timeupdate', () => { if (duration) { $('seek').value = video.currentTime / duration * 1000; $('clock').textContent = fmt(video.currentTime); updatePlayheads() } });
+        $('seek').oninput = () => { if (duration) video.currentTime = Number($('seek').value) / 1000 * duration };
+        $('playBtn').onclick = togglePlay;
+        $('backBtn').onclick = () => video.currentTime = clamp(video.currentTime - 1, 0, duration);
+        $('forwardBtn').onclick = () => video.currentTime = clamp(video.currentTime + 1, 0, duration);
+        video.onended = () => { playing = false; $('playBtn').textContent = '▶'; cancelAnimationFrame(raf) };
+        function togglePlay() { if (!video.src) { log('Load a clip before playback.', 'warn'); return } if (video.paused) { video.play(); playing = true; $('playBtn').textContent = 'Ⅱ'; startAudio(); syncLoop() } else { video.pause(); playing = false; $('playBtn').textContent = '▶'; stopAudio(); cancelAnimationFrame(raf) } }
+        function updatePlayheads() { document.querySelectorAll('.playhead').forEach(p => p.style.left = (duration ? video.currentTime / duration * 100 : 0) + '%') }
+        $('sensitivity').oninput = () => $('sensitivityVal').textContent = $('sensitivity').value + '%';
+        ['ambience', 'pulse', 'foley', 'texture'].forEach(id => $(id + 'Vol').oninput = () => $(id + 'Pct').textContent = $(id + 'Vol').value + '%');
+
+        function analyze() {
+          if (!video.src) { log('Add a video first.', 'warn'); return }
+          const btn = $('analyzeBtn'); btn.disabled = true; btn.textContent = 'Analyzing frames…'; $('analysisState').textContent = 'SCANNING'; log('Starting frame sampling and motion estimation.', 'cyan');
+          const canvas = document.createElement('canvas'), ctx = canvas.getContext('2d', { willReadFrequently: true });
+          const w = 160, h = 90; canvas.width = w; canvas.height = h;
+          const step = Number($('sampling').value), fps = 30, total = Math.max(2, Math.ceil(Math.min(duration, 30) * fps / step));
+          let frames = [], idx = 0, previous = null, prevGray = null, accum = 0, shifts = 0, maxEnergy = 0;
+          const sensitivity = Number($('sensitivity').value) / 100;
+          function sample() {
+            if (idx >= total || idx / fps * step >= duration) { finish(); return }
+            const t = Math.min(duration - .001, idx * step / fps);
+            video.currentTime = t;
+            const onSeek = () => {
+              video.removeEventListener('seeked', onSeek); try {
+                ctx.drawImage(video, 0, 0, w, h); const im = ctx.getImageData(0, 0, w, h), gray = new Uint8Array(w * h); let warm = 0;
+                for (let p = 0, j = 0; p < im.data.length; p += 4, j++) { let r = im.data[p], g = im.data[p + 1], b = im.data[p + 2]; gray[j] = .299 * r + .587 * g + .114 * b; if (r > b * 1.12) warm++ }
+                let diff = 0, motion = 0, blocks = 0;
+                if (prevGray) {
+                  for (let y = 4; y < h - 4; y += 4)for (let x = 4; x < w - 4; x += 4) {
+                    let sum = 0; for (let yy = 0; yy < 4; yy++)for (let xx = 0; xx < 4; xx++) { let k = (y + yy) * w + x + xx; sum += Math.abs(gray[k] - prevGray[k]) } let local = sum / 16; diff += local;
+                    // Lightweight block-matching motion estimate: search a small neighborhood for the closest previous patch.
+                    let best = 1e9, bx = 0, by = 0; for (let dy = -3; dy <= 3; dy += 3)for (let dx = -3; dx <= 3; dx += 3) { let cost = 0; for (let yy = 0; yy < 4; yy += 2)for (let xx = 0; xx < 4; xx += 2) { let a = gray[(y + yy) * w + x + xx], b = prevGray[(y + dy + yy) * w + x + dx + xx]; cost += Math.abs(a - b) } if (cost < best) { best = cost; bx = dx; by = dy } } motion += Math.hypot(bx, by); blocks++
+                  }
+                }
+                let energy = prevGray ? clamp((diff / Math.max(1, blocks)) / 38, 0, 1) : 0; let flow = blocks ? motion / blocks : 0; let color = warm / (w * h);
+                let cue = { t, energy: clamp(energy * .7 + flow / 5 * .3, 0, 1), diff: energy, flow, color }; frames.push(cue); accum += cue.energy; maxEnergy = Math.max(maxEnergy, cue.energy);
+                if (prevGray && Math.abs(color - (frames.length > 1 ? frames[frames.length - 2].color : color)) > .13) shifts++;
+                prevGray = gray; idx++; if (idx % Math.max(1, Math.floor(total / 8)) === 0) { btn.textContent = `Analyzing ${Math.round(idx / total * 100)}%…` }; sample();
+              } catch (err) { idx++; sample() }
+            }
+            video.addEventListener('seeked', onSeek, { once: true });
+          }
+          function finish() {
+            const threshold = clamp(.16 + (1 - sensitivity) * .32, .12, .48), peaks = [];
+            frames.forEach((f, i) => { let prev = frames[i - 1]?.energy || 0, next = frames[i + 1]?.energy || 0; if (f.energy > threshold && f.energy >= prev && f.energy >= next) { if (!peaks.length || f.t - peaks[peaks.length - 1].t > .22) peaks.push(f) } });
+            events = peaks.map((f, i) => ({ t: f.t, type: f.energy > Math.max(.48, threshold * 2.2) ? 'impact' : 'motion', energy: f.energy }));
+            if (!events.length && frames.length) events.push({ t: Math.min(duration * .35, 1), type: 'motion', energy: maxEnergy || .25 });
+            // Generate sparse transition/texture events from strong visual changes.
+            frames.forEach((f, i) => { if (i > 0 && Math.abs(f.color - frames[i - 1].color) > .13) events.push({ t: f.t, type: 'shift', energy: .45 }) });
+            events.sort((a, b) => a.t - b.t); motionSamples = frames; analysisDone = true;
+            $('motionMetric').textContent = Math.round(accum / Math.max(1, frames.length) * 100) + '%'; $('impactMetric').textContent = events.filter(e => e.type === 'impact').length; $('shiftMetric').textContent = shifts;
+            $('analysisState').textContent = 'ANALYSIS COMPLETE'; $('timelineState').textContent = events.length + ' CUES GENERATED';
+            renderTracks(); renderEventList(); btn.disabled = false; btn.textContent = '↻ Re-analyze clip'; log(`Analysis complete · ${frames.length} samples · ${events.length} audio cues generated.`, 'ok'); video.currentTime = 0;
+          }
+          sample();
+        }
+        $('analyzeBtn').onclick = analyze;
+        function renderTracks() {
+          const tracks = [...document.querySelectorAll('.track-lane')]; tracks.forEach(l => l.innerHTML = '');
+          if (!analysisDone || !duration) { tracks.forEach(l => { let p = document.createElement('div'); p.className = 'playhead'; l.append(p) }); return }
+          motionSamples.forEach(f => { let e = document.createElement('i'); e.className = 'event motion'; e.style.left = (f.t / duration * 100) + '%'; e.style.width = Math.max(.35, 100 / duration * .025) + '%'; e.style.opacity = .25 + f.energy * .75; tracks[0].append(e) });
+          events.forEach(e => { let el = document.createElement('i'); el.className = 'event ' + (e.type === 'impact' ? 'impact' : e.type === 'shift' ? 'ambience' : 'motion'); el.style.left = (e.t / duration * 100) + '%'; el.style.width = e.type === 'impact' ? '1.1%' : '.55%'; tracks[1].append(el) });
+          for (let t = 0; t < duration; t += Math.max(1.2, duration / 9)) { let el = document.createElement('i'); el.className = 'event ambience'; el.style.left = (t / duration * 100) + '%'; el.style.width = Math.max(2, Math.min(9, 100 / duration * 2.5)) + '%'; tracks[2].append(el) }
+          tracks.forEach(l => { let p = document.createElement('div'); p.className = 'playhead'; l.append(p) }); updatePlayheads();
+        }
+        function renderEventList() {
+          let list = $('eventList'); list.innerHTML = ''; if (!events.length) { list.textContent = 'No prominent motion spikes found. Try increasing sensitivity.'; return }
+          events.slice(0, 30).forEach((e, i) => { let row = document.createElement('div'); row.className = 'event-row'; let label = e.type === 'impact' ? 'Impact / transient' : e.type === 'shift' ? 'Scene texture shift' : 'Movement pulse'; row.innerHTML = `<time>${fmt(e.t)}</time><span>${label}</span><small>${Math.round(e.energy * 100)}% ENERGY</small>`; row.onclick = () => video.currentTime = e.t; row.style.cursor = 'pointer'; list.append(row) });
+        }
+        function ensureAudio() { if (!audioCtx) { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); master = audioCtx.createGain(); master.gain.value = .75; master.connect(audioCtx.destination) } if (audioCtx.state === 'suspended') audioCtx.resume() }
+        function volume(id) { return $(id + 'On').checked ? Number($(id + 'Vol').value) / 100 : 0 }
+        function tone(freq, start, dur, type = 'sine', gain = .1, slide = 0) { if (!audioCtx) return; let o = audioCtx.createOscillator(), g = audioCtx.createGain(); o.type = type; o.frequency.setValueAtTime(freq, start); if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(30, freq + slide), start + dur); g.gain.setValueAtTime(.0001, start); g.gain.exponentialRampToValueAtTime(Math.max(.0002, gain), start + .012); g.gain.exponentialRampToValueAtTime(.0001, start + dur); o.connect(g); g.connect(master); o.start(start); o.stop(start + dur + .03) }
+        function noiseHit(start, dur, gain, filterFreq = 900) { let n = Math.floor(audioCtx.sampleRate * dur), buf = audioCtx.createBuffer(1, n, audioCtx.sampleRate), d = buf.getChannelData(0); for (let i = 0; i < n; i++)d[i] = Math.random() * 2 - 1; let src = audioCtx.createBufferSource(), f = audioCtx.createBiquadFilter(), g = audioCtx.createGain(); src.buffer = buf; f.type = 'lowpass'; f.frequency.value = filterFreq; g.gain.setValueAtTime(gain, start); g.gain.exponentialRampToValueAtTime(.0001, start + dur); src.connect(f); f.connect(g); g.connect(master); src.start(start); src.stop(start + dur) }
+        function playCue(e, when) {
+          let mood = $('mood').value;
+          if (e.type === 'impact' && volume('foley')) { let v = volume('foley') * (.22 + e.energy * .3); tone(mood === 'playful' ? 180 : 75, when, .24, 'sine', v, -40); noiseHit(when, .09, v * .45, 1500) }
+          else if (e.type === 'motion' && volume('pulse')) { let base = mood === 'playful' ? 440 : mood === 'ambient' ? 260 : 330; tone(base + (e.energy * 180), when, .18, 'triangle', volume('pulse') * .13, 60) }
+          else if (e.type === 'shift' && volume('texture')) { noiseHit(when, .55, volume('texture') * .12, 3500); tone(620, when, .35, 'sine', volume('texture') * .04, 300) }
+        }
+        function startAudio() {
+          ensureAudio(); scheduled = []; lastCue = -1; const now = audioCtx.currentTime;
+          if (volume('ambience')) { let mood = $('mood').value; let base = mood === 'playful' ? 220 : mood === 'ambient' ? 110 : mood === 'action' ? 82 : 146;[1, 1.25, 1.5].forEach((r, i) => tone(base * r, now, Math.max(1, duration || 8), 'sine', volume('ambience') * .025, 0)) }
+        }
+        function stopAudio() {/* Video pause naturally stops cue scheduling; synth envelopes decay. */ }
+        function syncLoop() { if (!playing) return; let current = video.currentTime; events.forEach((e, i) => { if (e.t <= current + .035 && e.t > current - .08 && lastCue !== i) { playCue(e, audioCtx.currentTime + .015); lastCue = i } }); raf = requestAnimationFrame(syncLoop) }
+        $('resetBtn').onclick = () => { video.pause(); playing = false; cancelAnimationFrame(raf); $('playBtn').textContent = '▶'; if (objectURL) URL.revokeObjectURL(objectURL); objectURL = null; video.removeAttribute('src'); video.load(); video.style.display = 'none'; empty.style.display = 'block'; duration = 0; events = []; motionSamples = []; analysisDone = false; $('fileName').textContent = 'NO SOURCE LOADED'; $('durationLabel').textContent = '00:00.000'; $('resolution').textContent = '—'; $('motionMetric').textContent = $('impactMetric').textContent = $('shiftMetric').textContent = '—'; $('analysisState').textContent = 'AWAITING CLIP'; $('timelineState').textContent = 'NO GENERATED STEMS'; $('eventList').textContent = 'Analyze a clip to populate frame-aligned cues.'; renderTracks(); log('Session reset.', 'cyan') };
+      })();
+  </script>
+  <script src="sonicframe-chat-widget.js" defer></script>
+</body>
+
+</html>

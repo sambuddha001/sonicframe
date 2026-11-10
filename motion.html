@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Motion Intelligence | SonicFrame</title>
+    <link rel="icon" type="image/png" href="logo-edited.png">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: radial-gradient(ellipse at 15% 0%, #aeb7c018, transparent 36%), radial-gradient(ellipse at 90% 20%, #ffffff0b, transparent 32%), linear-gradient(130deg, #070809, #17191d 52%, #08090b);
+            color: #f1f3f6;
+            font-family: Manrope, Arial;
+            overflow-x: hidden
+        }
+
+        body:before {
+            content: '♫  ♪  ♬  ♩';
+            position: fixed;
+            z-index: -1;
+            right: 5%;
+            top: 25%;
+            font-size: clamp(50px, 9vw, 120px);
+            letter-spacing: 25px;
+            color: #fff;
+            opacity: .06;
+            text-shadow: 0 0 25px #fff;
+            animation: float 9s ease-in-out infinite alternate;
+            pointer-events: none
+        }
+
+        @keyframes float {
+            to {
+                transform: translateY(25px) rotate(8deg);
+                opacity: .12
+            }
+        }
+
+        nav {
+            min-height: 78px;
+            padding: 12px clamp(14px, 5vw, 76px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            background: linear-gradient(100deg, #111419f5, #20242af2, #101216f5);
+            border-bottom: 1px solid #454b55;
+            box-shadow: 0 12px 36px #0008;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            backdrop-filter: blur(15px)
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: white;
+            min-width: 190px
+        }
+
+        .logo {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .brand small {
+            display: block;
+            font: 9px 'DM Mono';
+            color: #9da5b0;
+            letter-spacing: 1px;
+            margin-top: 3px
+        }
+
+        .links {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center
+        }
+
+        .links a,
+        .cta {
+            position: relative;
+            text-decoration: none;
+            color: #d2d6dc;
+            font: 700 10px 'DM Mono';
+            letter-spacing: .5px;
+            padding: 11px 12px;
+            border: 1px solid transparent;
+            border-radius: 9px;
+            transition: .22s;
+            white-space: nowrap
+        }
+
+        .links a:hover,
+        .links a:focus-visible {
+            color: #fff;
+            border-color: #aeb6c255;
+            background: #ffffff0d;
+            box-shadow: 0 0 18px #fff2;
+            transform: translateY(-2px);
+            outline: none
+        }
+
+        .links a:after {
+            content: '';
+            position: absolute;
+            left: 12px;
+            right: 12px;
+            bottom: 5px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #fff, transparent);
+            transform: scaleX(0);
+            transition: .2s
+        }
+
+        .links a:hover:after {
+            transform: scaleX(1)
+        }
+
+        main {
+            max-width: 1160px;
+            margin: 0 auto;
+            padding: 70px 24px 45px
+        }
+
+        .eyebrow {
+            font: 10px 'DM Mono';
+            letter-spacing: 2px;
+            color: #c8ced6
+        }
+
+        h1 {
+            font-size: clamp(34px, 5vw, 58px);
+            letter-spacing: -2px;
+            margin: 15px 0
+        }
+
+        .lead {
+            color: #a7afb9;
+            line-height: 1.8;
+            font-size: 14px;
+            max-width: 780px
+        }
+
+        .panel {
+            margin-top: 28px;
+            border: 1px solid #3c424c;
+            border-radius: 18px;
+            padding: 28px;
+            background: linear-gradient(145deg, #1b1f25ee, #101216f5);
+            box-shadow: 0 20px 60px #0007
+        }
+
+        .panel h2 {
+            font-size: 18px;
+            margin: 0 0 10px
+        }
+
+        .panel p {
+            color: #aab1bb;
+            font-size: 12px;
+            line-height: 1.8
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 20px
+        }
+
+        .step {
+            padding: 17px;
+            border: 1px solid #3a4049;
+            border-radius: 12px;
+            background: #111419
+        }
+
+        .step b {
+            display: block;
+            font-size: 12px;
+            margin-bottom: 7px
+        }
+
+        .step span {
+            color: #a1a9b4;
+            font-size: 11px;
+            line-height: 1.6
+        }
+
+        .cta {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 18px;
+            background: linear-gradient(110deg, #f0f2f5, #8e969f);
+            color: #111317;
+            border: 0;
+            padding: 13px 18px;
+            box-shadow: 0 8px 24px #fff2;
+            font-size: 11px
+        }
+
+        .cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px #fff3
+        }
+
+        .bottom {
+            max-width: 1160px;
+            margin: 0 auto;
+            padding: 0 24px 35px
+        }
+
+        .module-links {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap
+        }
+
+        .module-links a {
+            color: #d7dce3;
+            text-decoration: none;
+            border: 1px solid #454b55;
+            border-radius: 10px;
+            padding: 10px 13px;
+            font-size: 10px;
+            background: #171a1f;
+            transition: .2s
+        }
+
+        .module-links a:hover {
+            border-color: #e4e8ee;
+            box-shadow: 0 0 18px #fff2;
+            transform: translateY(-2px)
+        }
+
+        footer {
+            text-align: center;
+            padding: 23px;
+            border-top: 1px solid #ffffff18;
+            color: #737d89;
+            font: 9px 'DM Mono';
+            letter-spacing: 1px
+        }
+
+        @media(max-width:800px) {
+            nav {
+                flex-wrap: wrap
+            }
+
+            .links {
+                order: 3;
+                width: 100%;
+                justify-content: flex-start;
+                overflow-x: auto;
+                flex-wrap: nowrap
+            }
+
+            main {
+                padding: 45px 17px 30px
+            }
+
+            .steps {
+                grid-template-columns: 1fr
+            }
+        }
+
+        @media(max-width:480px) {
+            .brand {
+                min-width: 0
+            }
+
+            .links a {
+                padding: 9px 8px;
+                font-size: 9px
+            }
+
+            .panel {
+                padding: 19px
+            }
+        }
+    </style>
+    <style>
+        html.sf-auth-pending body {
+            visibility: hidden
+        }
+
+        html.sf-auth-pending:before {
+            content: "♪";
+            position: fixed;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            font-size: 46px;
+            color: #fff;
+            background: #070809;
+            z-index: 2147483647;
+            text-shadow: 0 0 22px #fff;
+            visibility: visible
+        }
+    </style>
+    <script>document.documentElement.className += " sf-auth-pending"; document.documentElement.setAttribute("data-sf-protected", ""); setTimeout(function () { if (/sf-auth-pending/.test(document.documentElement.className)) location.replace("index.html?login=1&reason=timeout") }, 12000)</script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="sonicframe-auth.js"></script>
+</head>
+
+<body>
+    <nav><a class="brand" href="index.html">
+            <img src="logo-edited.png" alt="SonicFrame Logo" class="logo">
+            <div><b>SONICFRAME</b><small>A PROJECT OF TETRABYTE</small></div>
+        </a>
+        <div class="links"><a href="index.html">OVERVIEW</a><a href="studio.html">STUDIO</a><a
+                href="motion.html">MOTION</a><a href="foley.html">FOLEY</a><a href="timeline.html">TIMELINE</a><a
+                href="mixer.html">MIXER</a><a href="chatbot.html">AI CO-PILOT</a></div>
+    </nav>
+    <main>
+        <div class="eyebrow">TETRABYTE CREATIVE TOOLKIT · MODULE 01</div>
+        <h1>Motion Intelligence</h1>
+        <p class="lead">Read visual changes and movement energy to identify moments that deserve sound.</p>
+        <section class="panel">
+            <h2>Visual motion analysis</h2>
+            <p>The Studio samples frames from your selected clip and estimates frame-to-frame change and local block
+                movement. It uses those measurements to highlight motion peaks and possible impact moments.</p>
+            <div class="steps">
+                <div class="step"><b>01 · Frame sampling</b><span>Extracts visual samples from your local video.</span>
+                </div>
+                <div class="step"><b>02 · Motion energy</b><span>Compares neighboring frames and estimates movement
+                        intensity.</span></div>
+                <div class="step"><b>03 · Event detection</b><span>Marks prominent spikes for Foley and score
+                        cues.</span></div>
+            </div><a class="cta" href="studio.html#studio">OPEN MOTION ANALYSIS ↗</a>
+        </section>
+    </main>
+    <div class="bottom">
+        <div class="eyebrow" style="margin-bottom:12px">EXPLORE OTHER MODULES</div>
+        <div class="module-links"><a href="motion.html">Motion Intelligence</a><a href="foley.html">Foley & Sound
+                Design</a><a href="timeline.html">Adaptive Timeline</a><a href="mixer.html">Stem Mixer</a><a
+                href="studio.html">Full Studio ↗</a></div>
+    </div>
+    <footer>SONICFRAME · A PROJECT OF TETRABYTE · LOCAL-FIRST CREATIVE WORKSPACE</footer>
+    <script src="sonicframe-chat-widget.js" defer></script>
+</body>
+
+</html>

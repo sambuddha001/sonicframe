@@ -1,0 +1,106 @@
+/* SonicFrame floating musical chatbot launcher */
+.sf-chat-launcher {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 99999;
+  width: 62px;
+  height: 62px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  color: #111318;
+  text-decoration: none;
+  background: linear-gradient(145deg, #fff 0%, #cbd1da 48%, #8e98a7 100%);
+  border: 1px solid rgba(255, 255, 255, .8);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, .48),
+    0 0 22px rgba(220, 230, 245, .24),
+    inset 0 1px 0 rgba(255, 255, 255, .9);
+  transition: transform .22s ease, box-shadow .22s ease, filter .22s ease;
+  isolation: isolate;
+}
+
+.sf-chat-launcher::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border: 1px solid rgba(232, 240, 255, .45);
+  border-radius: 25px;
+  animation: sf-chat-pulse 2.6s ease-out infinite;
+  pointer-events: none;
+}
+
+.sf-chat-launcher:hover,
+.sf-chat-launcher:focus-visible {
+  transform: translateY(-5px) scale(1.045);
+  box-shadow: 0 13px 34px rgba(0, 0, 0, .58), 0 0 30px rgba(225, 235, 250, .48);
+  filter: brightness(1.08);
+  outline: none;
+}
+
+.sf-chat-launcher svg {
+  width: 30px;
+  height: 30px;
+  display: block;
+}
+
+.sf-chat-launcher .sf-chat-tooltip {
+  position: absolute;
+  right: 74px;
+  white-space: nowrap;
+  padding: 8px 11px;
+  border-radius: 8px;
+  color: #f4f6fa;
+  background: #171a20;
+  border: 1px solid #555e6a;
+  font: 10px/1.2 monospace;
+  letter-spacing: .7px;
+  opacity: 0;
+  transform: translateX(5px);
+  pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease;
+}
+
+.sf-chat-launcher:hover .sf-chat-tooltip,
+.sf-chat-launcher:focus-visible .sf-chat-tooltip {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+@keyframes sf-chat-pulse {
+  0% {
+    transform: scale(.92);
+    opacity: .72;
+  }
+
+  75%,
+  100% {
+    transform: scale(1.28);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .sf-chat-launcher {
+    right: 16px;
+    bottom: 16px;
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+  }
+
+  .sf-chat-launcher .sf-chat-tooltip {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .sf-chat-launcher,
+  .sf-chat-launcher::before,
+  .sf-chat-launcher .sf-chat-tooltip {
+    animation: none !important;
+    transition: none !important;
+  }
+}

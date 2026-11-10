@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>SonicFrame AI Co-Pilot</title>
+  <link rel="icon" type="image/png" href="logo-edited.png">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Mono&family=Manrope:wght@400;600;700;800&display=swap');
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      background: radial-gradient(ellipse at 10% 0%, #aeb7c018, transparent 36%), linear-gradient(130deg, #070809, #17191d, #08090b);
+      color: #f1f3f6;
+      font-family: Manrope, Arial
+    }
+
+    nav {
+      padding: 13px 5%;
+      display: flex;
+      justify-content: space-between;
+      background: #111419;
+      border-bottom: 1px solid #454b55
+    }
+
+    .brand {
+      color: white;
+      text-decoration: none;
+      display: flex;
+      gap: 11px;
+      align-items: center
+    }
+
+    .logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 11px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .brand small {
+      display: block;
+      color: #9ca5b0;
+      font: 9px 'DM Mono'
+    }
+
+    nav>a:last-child {
+      color: #dbe0e7;
+      text-decoration: none;
+      font-size: 12px;
+      align-self: center
+    }
+
+    .wrap {
+      max-width: 900px;
+      margin: 35px auto;
+      padding: 0 16px
+    }
+
+    .eyebrow {
+      font: 10px 'DM Mono';
+      letter-spacing: 2px;
+      color: #cbd1d9
+    }
+
+    .chat {
+      margin-top: 20px;
+      height: min(650px, 72vh);
+      min-height: 420px;
+      border: 1px solid #414852;
+      border-radius: 17px;
+      background: #111419;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden
+    }
+
+    .head {
+      padding: 15px;
+      border-bottom: 1px solid #343a43;
+      font-size: 12px
+    }
+
+    .messages {
+      padding: 17px;
+      overflow: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 11px
+    }
+
+    .msg {
+      max-width: 82%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 12px;
+      line-height: 1.7;
+      white-space: pre-wrap
+    }
+
+    .bot {
+      background: #252a31;
+      border: 1px solid #414852;
+      align-self: flex-start
+    }
+
+    .user {
+      background: #e2e6eb;
+      color: #11151a;
+      align-self: flex-end
+    }
+
+    .compose {
+      display: flex;
+      gap: 9px;
+      padding: 13px;
+      border-top: 1px solid #343a43
+    }
+
+    .compose textarea {
+      flex: 1;
+      resize: none;
+      min-height: 45px;
+      padding: 12px;
+      border-radius: 9px;
+      background: #080a0d;
+      border: 1px solid #414852;
+      color: white
+    }
+
+    .compose button {
+      border: 0;
+      border-radius: 9px;
+      background: linear-gradient(110deg, #f0f2f5, #8e969f);
+      color: #111;
+      font-weight: 900;
+      padding: 0 17px;
+      cursor: pointer
+    }
+
+    footer {
+      text-align: center;
+      color: #7c8591;
+      padding: 22px;
+      font: 9px 'DM Mono'
+    }
+
+    @media(max-width:550px) {
+      .msg {
+        max-width: 96%
+      }
+
+      .chat {
+        height: 70vh
+      }
+    }
+  </style>
+  <style>
+    html.sf-auth-pending body {
+      visibility: hidden
+    }
+
+    html.sf-auth-pending:before {
+      content: "♪";
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-size: 46px;
+      color: #fff;
+      background: #070809;
+      z-index: 2147483647;
+      text-shadow: 0 0 22px #fff;
+      visibility: visible
+    }
+  </style>
+  <script>
+    document.documentElement.className += " sf-auth-pending";
+    document.documentElement.setAttribute("data-sf-protected", "");
+    setTimeout(function () { if (/sf-auth-pending/.test(document.documentElement.className)) location.replace("index.html?login=1&reason=timeout") }, 12000)
+  </script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="sonicframe-auth.js"></script>
+</head>
+
+<body>
+  <nav>
+    <a class="brand" href="index.html">
+      <img src="logo-edited.png" alt="SonicFrame Logo" class="logo">
+      <div><b>SONICFRAME</b><small>A PROJECT OF TETRABYTE</small></div>
+    </a>
+    <a href="studio.html">← Back to Studio</a>
+  </nav>
+  <div class="wrap">
+    <div class="eyebrow">CREATIVE ASSISTANT · TETRABYTE</div>
+    <h1>SonicFrame AI Co-Pilot</h1>
+    <p style="color:#aab2bd;font-size:12px">Ask about motion analysis, Foley ideas, sound design or the studio workflow.
+    </p>
+    <div class="chat">
+      <div class="head">✦ &nbsp; Creative Co-Pilot <span style="color:#4ecca3">· Live AI Active</span></div>
+      <div class="messages" id="messages">
+        <div class="msg bot">Hi! I can help you plan sound design, understand motion analysis and use SonicFrame. Ask me
+          anything!</div>
+      </div>
+      <form class="compose" id="form">
+        <textarea id="input" placeholder="Ask your question…" required></textarea>
+        <button>Send ↗</button>
+      </form>
+    </div>
+  </div>
+  <footer>SONICFRAME · A PROJECT OF TETRABYTE</footer>
+  <script>
+    const box = document.getElementById('messages'), inp = document.getElementById('input');
+
+    function add(t, c) {
+      let d = document.createElement('div');
+      d.className = 'msg ' + c;
+      d.textContent = t;
+      box.append(d);
+      box.scrollTop = box.scrollHeight;
+    }
+
+    async function send(t) {
+      if (!t.trim()) return;
+      let userMsg = t;
+      add(userMsg, 'user');
+      inp.value = '';
+
+      let loadingId = 'msg_' + Math.random().toString(36).substr(2, 9);
+      let loadingDiv = document.createElement('div');
+      loadingDiv.id = loadingId;
+      loadingDiv.className = 'msg bot';
+      loadingDiv.textContent = 'Thinking...';
+      box.append(loadingDiv);
+      box.scrollTop = box.scrollHeight;
+
+      try {
+        let tk = await (window.SFAuth ? SFAuth.getToken() : Promise.resolve(''));
+        let r = await fetch('/.netlify/functions/chat', {
+          method: 'POST',
+          headers: Object.assign({ 'Content-Type': 'application/json' }, tk ? { Authorization: 'Bearer ' + tk } : {}),
+          body: JSON.stringify({ message: userMsg })
+        });
+
+        let d = await r.json();
+        if (!r.ok) throw new Error(d.error || 'HTTP ' + r.status);
+        let replyText = d.reply || 'No reply received. Please try again.';
+
+        document.getElementById(loadingId).textContent = replyText;
+        box.scrollTop = box.scrollHeight;
+      } catch (e) {
+        document.getElementById(loadingId).textContent = 'Backend request failed: ' + e.message + '. Please check your Netlify deployment and API keys.';
+        box.scrollTop = box.scrollHeight;
+      }
+    }
+
+    document.getElementById('form').onsubmit = e => {
+      e.preventDefault();
+      send(inp.value);
+    };
+  </script>
+</body>
+
+</html>

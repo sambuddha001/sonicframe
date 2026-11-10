@@ -1,0 +1,61 @@
+SONICFRAME LOGIN SETUP  (about 5 minutes, free)
+================================================
+Login uses Google Firebase Authentication: email + password, and "Continue with Google".
+Studio, Motion, Foley, Timeline, Mixer and AI Co-Pilot are locked until a user signs in.
+Only index.html (the landing page) is public.
+
+1. Go to https://console.firebase.google.com  ->  Add project (Analytics not needed).
+
+2. Build -> Authentication -> Get started -> Sign-in method tab:
+     - Enable "Email/Password"
+     - Enable "Google" (choose a support email, Save)
+
+3. Project settings (gear icon) -> General -> "Your apps" -> click the Web icon </>
+   -> register an app (any name). Copy the firebaseConfig values.
+
+4. Open firebase-config.js and paste apiKey, authDomain, projectId, appId.
+   (These are not secrets; they are meant to be in front-end code.)
+
+5. Authentication -> Settings -> Authorized domains -> Add domain:
+     your-site-name.netlify.app   (and your custom domain, if you have one)
+   "localhost" is already allowed for testing.
+
+6. Deploy the whole folder to Netlify (drag and drop). Keep all files together.
+
+TESTING LOCALLY
+Do not double-click the HTML files. Sign-in does not work from file://.
+Run a local server inside the folder instead, then open http://localhost:8000
+     python -m http.server 8000
+
+OPTIONS (firebase-config.js)
+REQUIRE_EMAIL_VERIFICATION = true  -> email users must click the link in the
+verification email before they can enter (Google users are already verified).
+Set to false to let email users in straight after registering.
+
+IMPORTANT: WHAT THIS DOES AND DOES NOT PROTECT
+The lock hides the pages and features from anyone not signed in. Because this is a
+static site, the HTML files themselves can still be downloaded by someone who knows
+the URL. That is fine for a UI lock, but anything that must be truly private (such
+as your AI API key and usage) must be checked on the server. The AI Co-Pilot already
+sends the signed-in user's Firebase ID token to your endpoint as
+"Authorization: Bearer <token>". Verify it there with the Firebase Admin SDK
+(verifyIdToken) and reject requests without a valid token.
+
+FILES ADDED
+firebase-config.js    your Firebase settings and options
+sonicframe-auth.js    login logic and the page lock
+SETUP-AUTH.txt        this guide
+
+DEPLOYING TO NETLIFY (frontend only)
+1. Unzip SONICFRAME.zip. Open https://app.netlify.com/drop
+2. Drag the unzipped SONICFRAME folder (the one that directly contains index.html)
+   onto the page. Do not drag the zip, and do not drag a folder that contains it.
+3. Netlify gives you a URL like https://random-name.netlify.app. Optional: Site
+   configuration -> Change site name.
+4. Copy that domain (without https://) into Firebase -> Authentication ->
+   Settings -> Authorized domains -> Add domain. Google/email login will not
+   work on the live site until this is done.
+5. Open the live URL, register, and test. To update later, drag the folder again
+   (Deploys tab -> drag and drop) or connect a GitHub repo for automatic deploys.
+Included netlify.toml adds basic security headers and makes sure updates show
+immediately.

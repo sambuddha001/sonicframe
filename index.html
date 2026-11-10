@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>SonicFrame | TetraByte</title>
+  <link rel="icon" type="image/png" href="logo-edited.png">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Mono&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      background: radial-gradient(ellipse at 10% 0%, #aeb7c01c, transparent 36%), radial-gradient(ellipse at 90% 30%, #ffffff0d, transparent 32%), linear-gradient(130deg, #070809, #181b20 55%, #08090b);
+      color: #f2f4f6;
+      font-family: Manrope, Arial;
+      min-height: 100vh
+    }
+
+    nav {
+      padding: 13px clamp(14px, 5vw, 75px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      background: #111419ed;
+      border-bottom: 1px solid #424852;
+      position: sticky;
+      top: 0
+    }
+
+    .brand {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      text-decoration: none;
+      color: white
+    }
+
+    .logo {
+      width: 46px;
+      height: 46px;
+      border-radius: 13px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .brand small {
+      display: block;
+      color: #9ca5b0;
+      font: 9px 'DM Mono';
+      letter-spacing: 1px;
+      margin-top: 3px
+    }
+
+    .navlinks {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap
+    }
+
+    .navlinks a,
+    .btn {
+      color: #e0e4e9;
+      text-decoration: none;
+      padding: 11px 14px;
+      border: 1px solid #454b55;
+      border-radius: 9px;
+      background: #ffffff08;
+      font: 700 10px 'DM Mono';
+      cursor: pointer;
+      transition: .2s
+    }
+
+    .navlinks a:hover,
+    .btn:hover {
+      border-color: #f1f3f6;
+      box-shadow: 0 0 20px #fff2;
+      transform: translateY(-2px)
+    }
+
+    main {
+      max-width: 1200px;
+      margin: auto;
+      padding: 80px 25px
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 45px;
+      align-items: center
+    }
+
+    .eyebrow {
+      font: 10px 'DM Mono';
+      letter-spacing: 2px;
+      color: #cbd1d9
+    }
+
+    .hero h1 {
+      font-size: clamp(45px, 7vw, 82px);
+      line-height: 1;
+      letter-spacing: -4px;
+      margin: 18px 0
+    }
+
+    .hero h1 span {
+      background: linear-gradient(90deg, #fff, #9da6b1);
+      background-clip: text;
+      color: transparent
+    }
+
+    .hero p {
+      max-width: 650px;
+      color: #a7afb9;
+      line-height: 1.85;
+      font-size: 14px
+    }
+
+    .cta {
+      display: inline-block;
+      margin: 14px 9px 0 0;
+      padding: 14px 18px;
+      border-radius: 10px;
+      background: linear-gradient(110deg, #f0f2f5, #8c949e);
+      color: #111;
+      text-decoration: none;
+      font-weight: 900;
+      font-size: 11px
+    }
+
+    .cta.secondary {
+      background: #171a1f;
+      color: #e7eaee;
+      border: 1px solid #535b66
+    }
+
+    .visual {
+      height: 340px;
+      border: 1px solid #444b55;
+      border-radius: 23px;
+      background: radial-gradient(circle at 50% 43%, #777f8c55, transparent 40%), linear-gradient(145deg, #22262c, #0d0f12);
+      display: grid;
+      place-items: center;
+      position: relative;
+      overflow: hidden
+    }
+
+    .visual strong {
+      font-size: 105px;
+      color: #e6ebf1;
+      text-shadow: 0 0 22px #fff7, 0 0 65px #fff4;
+      animation: glow 3s ease-in-out infinite alternate
+    }
+
+    .visual small {
+      position: absolute;
+      bottom: 22px;
+      font: 10px 'DM Mono';
+      letter-spacing: 2px;
+      color: #aeb6c0
+    }
+
+    @keyframes glow {
+      to {
+        transform: scale(1.08);
+        text-shadow: 0 0 35px #fff, 0 0 90px #fff8
+      }
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 13px;
+      margin-top: 75px
+    }
+
+    .card {
+      padding: 20px;
+      border: 1px solid #3c424c;
+      border-radius: 14px;
+      background: linear-gradient(145deg, #1b1f25, #101216);
+      color: white;
+      text-decoration: none;
+      transition: .2s
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      border-color: #dce2ea;
+      box-shadow: 0 15px 35px #fff1
+    }
+
+    .card i {
+      font-size: 26px;
+      font-style: normal;
+      text-shadow: 0 0 15px #fff
+    }
+
+    .card b {
+      display: block;
+      margin: 12px 0 7px;
+      font-size: 12px
+    }
+
+    .card small {
+      color: #9da6b1;
+      line-height: 1.6;
+      font-size: 10px
+    }
+
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #000c;
+      z-index: 10;
+      align-items: center;
+      justify-content: center;
+      padding: 15px
+    }
+
+    .overlay.show {
+      display: flex
+    }
+
+    .auth {
+      width: min(400px, 100%);
+      background: #171a20;
+      border: 1px solid #555d68;
+      border-radius: 17px;
+      padding: 25px
+    }
+
+    .auth input {
+      display: block;
+      width: 100%;
+      margin: 12px 0;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #424a55;
+      background: #0b0d10;
+      color: white
+    }
+
+    .auth button {
+      width: 100%;
+      padding: 12px;
+      border: 0;
+      border-radius: 8px;
+      background: linear-gradient(110deg, #f0f2f5, #8e969f);
+      font-weight: 900;
+      cursor: pointer
+    }
+
+    .close {
+      float: right;
+      background: none !important;
+      color: white;
+      width: auto !important;
+      padding: 0 !important;
+      font-size: 22px
+    }
+
+    footer {
+      text-align: center;
+      padding: 22px;
+      border-top: 1px solid #ffffff17;
+      color: #79828e;
+      font: 9px 'DM Mono'
+    }
+
+    /* Floating musical notation across the landing page */
+    .music-field {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+      isolation: isolate
+    }
+
+    .music-symbol {
+      position: absolute;
+      left: var(--x);
+      top: var(--y);
+      font-family: Georgia, serif;
+      font-size: var(--size);
+      color: #f5f7fa;
+      opacity: 0;
+      filter: drop-shadow(0 0 5px #fff) drop-shadow(0 0 15px #dce5f4);
+      animation: musicDrift var(--duration) ease-in-out var(--delay) infinite;
+      transform: translate3d(0, 0, 0) rotate(var(--rot));
+      will-change: transform, opacity
+    }
+
+    @keyframes musicDrift {
+      0% {
+        opacity: 0;
+        transform: translate3d(0, 22px, 0) rotate(var(--rot)) scale(.8)
+      }
+
+      15% {
+        opacity: var(--opacity)
+      }
+
+      75% {
+        opacity: var(--opacity)
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate3d(var(--drift), -105px, 0) rotate(calc(var(--rot) + 24deg)) scale(1.12)
+      }
+    }
+
+    nav,
+    main,
+    footer {
+      position: relative;
+      z-index: 1
+    }
+
+    .visual {
+      perspective: 800px;
+      isolation: isolate
+    }
+
+    .visual:after {
+      content: "";
+      position: absolute;
+      inset: 12%;
+      border: 1px solid #ffffff12;
+      border-radius: 50%;
+      box-shadow: 0 0 50px #ffffff0a, inset 0 0 40px #ffffff08;
+      pointer-events: none
+    }
+
+    .audio-track {
+      position: relative;
+      z-index: 2;
+      width: min(76%, 360px);
+      height: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 22px 25px;
+      border: 1px solid #ffffff38;
+      border-radius: 22px;
+      background: linear-gradient(145deg, #ffffff18, #ffffff05);
+      box-shadow: 0 0 25px #ffffff13, inset 0 0 25px #ffffff0a;
+      backdrop-filter: blur(5px);
+      transform: translate3d(var(--move-x, 0px), var(--move-y, 0px), 0) rotateX(var(--tilt-y, 0deg)) rotateY(var(--tilt-x, 0deg));
+      transition: transform .14s ease-out, box-shadow .25s ease;
+      will-change: transform
+    }
+
+    .audio-track:before,
+    .audio-track:after {
+      content: "";
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #ffffff35, transparent)
+    }
+
+    .audio-track:before {
+      top: 15px
+    }
+
+    .audio-track:after {
+      bottom: 15px
+    }
+
+    .audio-track span {
+      display: block;
+      width: 7px;
+      height: var(--bar);
+      min-height: 9px;
+      border-radius: 9px;
+      background: linear-gradient(180deg, #fff, #aeb8c5 65%, #f8fafc);
+      box-shadow: 0 0 10px #fff8, 0 0 23px #e8edf566;
+      animation: waveBars var(--speed) ease-in-out var(--bar-delay) infinite alternate;
+      transform-origin: center
+    }
+
+    @keyframes waveBars {
+      from {
+        transform: scaleY(.38);
+        opacity: .58
+      }
+
+      to {
+        transform: scaleY(1);
+        opacity: 1
+      }
+    }
+
+    .visual:hover .audio-track {
+      box-shadow: 0 0 38px #fff3, inset 0 0 28px #ffffff15;
+      border-color: #ffffff88
+    }
+
+    @media(prefers-reduced-motion:reduce) {
+
+      .music-symbol,
+      .audio-track span {
+        animation: none
+      }
+
+      .audio-track {
+        transition: none
+      }
+    }
+
+    @media(max-width:850px) {
+      .hero {
+        grid-template-columns: 1fr
+      }
+
+      .cards {
+        grid-template-columns: repeat(2, 1fr)
+      }
+    }
+
+    @media(max-width:550px) {
+      nav {
+        align-items: flex-start;
+        flex-direction: column
+      }
+
+      .cards {
+        grid-template-columns: 1fr
+      }
+
+      .hero h1 {
+        letter-spacing: -2px
+      }
+
+      main {
+        padding: 50px 17px
+      }
+
+      .visual {
+        height: 240px
+      }
+    }
+
+    .auth {
+      max-height: calc(100vh - 30px);
+      overflow: auto
+    }
+
+    .auth h2 {
+      margin: 8px 0 4px;
+      font-size: 24px
+    }
+
+    .authsub {
+      color: #aab2bd;
+      font-size: 12px;
+      line-height: 1.6;
+      margin: 0 0 16px
+    }
+
+    .auth .gbtn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 11px;
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #cfd5dd;
+      background: #fff;
+      color: #1f2328;
+      font: 700 12px Manrope, Arial;
+      cursor: pointer;
+      transition: .2s
+    }
+
+    .auth .gbtn:hover {
+      box-shadow: 0 0 22px #fff5;
+      transform: translateY(-1px)
+    }
+
+    .auth .gbtn svg {
+      width: 18px;
+      height: 18px;
+      flex: none
+    }
+
+    .or {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 16px 0 4px;
+      color: #7d8794;
+      font: 9px 'DM Mono';
+      letter-spacing: 1px
+    }
+
+    .or:before,
+    .or:after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: #3a414b
+    }
+
+    .auth .tabs {
+      display: flex;
+      gap: 4px;
+      padding: 4px;
+      margin: 12px 0 2px;
+      border: 1px solid #3a414b;
+      border-radius: 10px;
+      background: #0b0d10
+    }
+
+    .auth .tabs button {
+      flex: 1;
+      padding: 9px;
+      border-radius: 7px;
+      background: none;
+      color: #9ca5b0;
+      font: 700 11px Manrope, Arial;
+      cursor: pointer
+    }
+
+    .auth .tabs button.on {
+      background: linear-gradient(110deg, #f0f2f5, #8e969f);
+      color: #111
+    }
+
+    .auth .submit {
+      margin-top: 6px
+    }
+
+    .auth button:disabled {
+      opacity: .55;
+      cursor: wait
+    }
+
+    .auth .row2 {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 10px
+    }
+
+    .auth .linkbtn {
+      width: auto;
+      padding: 4px 0;
+      background: none;
+      color: #aab2bd;
+      font: 600 11px Manrope, Arial;
+      text-decoration: underline;
+      cursor: pointer
+    }
+
+    .auth .linkbtn:hover {
+      color: #fff
+    }
+
+    .msgbox {
+      margin-top: 12px;
+      padding: 11px 13px;
+      border-radius: 9px;
+      font-size: 11px;
+      line-height: 1.6;
+      border: 1px solid #4a525d;
+      background: #0f1216;
+      color: #dfe4ea
+    }
+
+    .msgbox.err {
+      border-color: #7a3b44;
+      background: #1d1013;
+      color: #ffc9d0
+    }
+
+    .msgbox.ok {
+      border-color: #3f6b52;
+      background: #0d1812;
+      color: #c8f3d9
+    }
+
+    .auth .fine {
+      font-size: 10px;
+      color: #7d8794;
+      line-height: 1.6;
+      margin: 14px 0 0
+    }
+  </style>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="sonicframe-auth.js"></script>
+</head>
+
+<body>
+  <div class="music-field" id="musicField" aria-hidden="true"></div>
+  <nav><a class="brand" href="index.html">
+      <img src="logo-edited.png" alt="SonicFrame Logo" class="logo">
+      <div><b>SONICFRAME</b><small>A PROJECT OF TETRABYTE</small></div>
+    </a>
+    <div class="navlinks"><a href="studio.html">Studio</a><a href="motion.html">Modules</a><a href="chatbot.html">AI
+        Co-Pilot</a><button class="btn" id="navAuth">Sign In / Register</button></div>
+  </nav>
+  <main>
+    <section class="hero">
+      <div>
+        <div class="eyebrow">TETRABYTE PRESENTS · VISUAL-TO-AUDIO INTELLIGENCE</div>
+        <h1>Give every<br>frame a <span>sound.</span></h1>
+        <p>SonicFrame transforms silent animation into an expressive soundscape. Analyze movement, identify impact
+          moments and shape synchronized procedural audio through one creative workspace.</p><a class="cta" href="#"
+          onclick="openAuth();return false">ENTER SONICFRAME ↗</a><a class="cta secondary" href="foley.html">EXPLORE
+          FOLEY</a>
+        <p style="font:9px 'DM Mono';letter-spacing:1px;margin-top:25px">MOTION ANALYSIS / FOLEY DESIGN / ADAPTIVE SCORE
+        </p>
+      </div>
+      <div class="visual" id="soundVisual" aria-label="Interactive audio waveform visualizer">
+        <div class="audio-track" id="audioTrack" aria-label="Audio track waveform"></div><small>FRAME · MOTION ·
+          SOUND</small>
+      </div>
+    </section>
+    <section class="cards"><a class="card" href="motion.html"><i>⌁</i><b>Motion Intelligence</b><small>Detect movement
+          energy and visual changes.</small></a><a class="card" href="foley.html"><i>♫</i><b>Foley & Sound
+          Design</b><small>Build procedural impacts and ambient layers.</small></a><a class="card"
+        href="timeline.html"><i>▤</i><b>Adaptive Timeline</b><small>Inspect frame-aligned audio cues.</small></a><a
+        class="card" href="mixer.html"><i>≋</i><b>Stem Mixer</b><small>Balance independent sound layers.</small></a>
+    </section>
+  </main>
+  <footer>SONICFRAME · A PROJECT OF TETRABYTE · CREATIVE AUDIO WORKSPACE</footer>
+  <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+    <div class="auth"><button class="close" id="authClose" aria-label="Close">×</button>
+      <div class="eyebrow">TETRABYTE ACCESS</div>
+      <h2 id="authTitle">Welcome back</h2>
+      <p class="authsub" id="authSub">Sign in to unlock the Studio, modules and AI Co-Pilot.</p><button type="button"
+        class="gbtn" id="googleBtn"><svg viewBox="0 0 48 48" aria-hidden="true">
+          <path fill="#EA4335"
+            d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.2C12.4 13.6 17.7 9.5 24 9.5z" />
+          <path fill="#4285F4"
+            d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.6 5.9c4.4-4.1 7-10.1 7-17.6z" />
+          <path fill="#FBBC05"
+            d="M10.5 28.6A14.5 14.5 0 0 1 9.5 24c0-1.6.3-3.2.8-4.6l-7.9-6.2A24 24 0 0 0 0 24c0 3.9.9 7.5 2.6 10.8l7.9-6.2z" />
+          <path fill="#34A853"
+            d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.6-5.9c-2.1 1.4-4.9 2.3-8.3 2.3-6.3 0-11.6-4.1-13.5-9.9l-7.9 6.2C6.5 42.6 14.6 48 24 48z" />
+        </svg>Continue with Google</button>
+      <div class="or"><span>OR USE YOUR EMAIL</span></div>
+      <div class="tabs"><button type="button" id="tabIn" class="on">Sign In</button><button type="button"
+          id="tabUp">Register</button></div>
+      <form id="authForm" novalidate><input id="authName" type="text" autocomplete="name" placeholder="Your name"
+          hidden><input id="authEmail" type="email" autocomplete="email" placeholder="Email address"><input
+          id="authPass" type="password" autocomplete="current-password" placeholder="Password"><input id="authPass2"
+          type="password" autocomplete="new-password" placeholder="Confirm password" hidden><button type="submit"
+          class="submit" id="authSubmit">Sign In ↗</button></form>
+      <div class="row2"><button type="button" class="linkbtn" id="forgotBtn">Forgot password?</button><button
+          type="button" class="linkbtn" id="resendBtn" hidden>Resend verification email</button></div>
+      <div class="msgbox" id="authMsg" role="status" aria-live="polite" hidden></div>
+      <p class="fine">Your account is handled by Google Firebase Authentication. SonicFrame never sees or stores your
+        password.</p>
+    </div>
+  </div>
+  <script>
+    // Scatter softly glowing musical symbols through the full landing-page background.
+    (function () { const field = document.getElementById('musicField'); const glyphs = ['♪', '♫', '♬', '♩', '♭', '♮', '♯']; for (let i = 0; i < 34; i++) { const el = document.createElement('span'); el.className = 'music-symbol'; el.textContent = glyphs[i % glyphs.length]; el.style.setProperty('--x', (2 + Math.random() * 96) + '%'); el.style.setProperty('--y', (5 + Math.random() * 92) + '%'); el.style.setProperty('--size', (18 + Math.random() * 29) + 'px'); el.style.setProperty('--duration', (9 + Math.random() * 13) + 's'); el.style.setProperty('--delay', (-Math.random() * 18) + 's'); el.style.setProperty('--rot', (-28 + Math.random() * 56) + 'deg'); el.style.setProperty('--drift', (-38 + Math.random() * 76) + 'px'); el.style.setProperty('--opacity', (0.12 + Math.random() * 0.2).toFixed(2)); field.appendChild(el) } })();
+    // The central waveform gently follows the pointer while it is hovered.
+    (function () { const stage = document.getElementById('soundVisual'), track = document.getElementById('audioTrack'); if (!stage || !track) return; for (let i = 0; i < thirtyBars(); i++) { const bar = document.createElement('span'); bar.style.setProperty('--bar', (16 + Math.random() * 88) + 'px'); bar.style.setProperty('--speed', (0.48 + Math.random() * 0.9) + 's'); bar.style.setProperty('--bar-delay', (-Math.random() * 1.3) + 's'); track.appendChild(bar) } function thirtyBars() { return 31 } stage.addEventListener('pointermove', e => { const r = stage.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5; track.style.setProperty('--move-x', (x * 25).toFixed(1) + 'px'); track.style.setProperty('--move-y', (y * 18).toFixed(1) + 'px'); track.style.setProperty('--tilt-x', (x * 13).toFixed(1) + 'deg'); track.style.setProperty('--tilt-y', (-y * 11).toFixed(1) + 'deg') }); stage.addEventListener('pointerleave', () => { track.style.setProperty('--move-x', '0px'); track.style.setProperty('--move-y', '0px'); track.style.setProperty('--tilt-x', '0deg'); track.style.setProperty('--tilt-y', '0deg') }) })();
+  </script>
+  <script>
+    (function () {
+      var A = window.SFAuth, $ = function (i) { return document.getElementById(i) };
+      var ov = $('overlay'), mode = 'in', busy = false, signedIn = false;
+      var qs = new URLSearchParams(location.search);
+
+      function msg(text, kind) { var m = $('authMsg'); if (!text) { m.hidden = true; return } m.hidden = false; m.className = 'msgbox' + (kind ? ' ' + kind : ''); m.textContent = text }
+      function setBusy(b) { busy = b;['googleBtn', 'authSubmit', 'tabIn', 'tabUp', 'forgotBtn', 'resendBtn'].forEach(function (i) { $(i).disabled = b }) }
+      function setMode(m) {
+        mode = m; var up = m === 'up';
+        $('tabIn').classList.toggle('on', !up); $('tabUp').classList.toggle('on', up);
+        $('authName').hidden = !up; $('authPass2').hidden = !up;
+        $('authPass').autocomplete = up ? 'new-password' : 'current-password';
+        $('authTitle').textContent = up ? 'Create your account' : 'Welcome back';
+        $('authSub').textContent = up ? 'Register to unlock the Studio, modules and AI Co-Pilot.' : 'Sign in to unlock the Studio, modules and AI Co-Pilot.';
+        $('authSubmit').textContent = up ? 'Create account \u2197' : 'Sign In \u2197';
+        $('forgotBtn').hidden = up; $('resendBtn').hidden = true; msg('');
+      }
+      function open(m) { ov.classList.add('show'); setMode(m || 'in'); setTimeout(function () { try { $('googleBtn').focus() } catch (e) { } }, 30) }
+      function close() { ov.classList.remove('show') }
+      function go() { location.href = A.nextUrl() }
+      function fail(e) { msg(A.friendlyError(e), 'err'); if (e && e.code === 'sf/unverified') $('resendBtn').hidden = false }
+
+      window.openAuth = function (m) { if (signedIn) { go(); return } open(m) };
+      window.closeAuth = close;
+
+      if (!A || !A.configured) {
+        msg('Login is not set up yet. Add your Firebase details to firebase-config.js (see SETUP-AUTH.txt).', 'err');
+      }
+      if (location.protocol === 'file:') {
+        msg('Sign-in only works when the site is opened from a web address (your Netlify link or http://localhost), not as a local file.', 'err');
+      }
+
+      $('authClose').onclick = close;
+      ov.addEventListener('click', function (e) { if (e.target === ov) close() });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close() });
+      $('tabIn').onclick = function () { setMode('in') };
+      $('tabUp').onclick = function () { setMode('up') };
+
+      $('googleBtn').onclick = function () {
+        if (busy) return; msg(''); setBusy(true);
+        A.signInGoogle().then(go).catch(fail).then(function () { setBusy(false) });
+      };
+
+      $('authForm').onsubmit = function (e) {
+        e.preventDefault(); if (busy) return; msg('');
+        var email = $('authEmail').value.trim(), pass = $('authPass').value;
+        if (!email) { msg('Please enter your email address.', 'err'); return }
+        if (!pass) { msg('Please enter your password.', 'err'); return }
+        if (mode === 'up') {
+          var name = $('authName').value.trim();
+          if (!name) { msg('Please enter your name.', 'err'); return }
+          if (pass.length < 8) { msg('Please choose a password with at least 8 characters.', 'err'); return }
+          if (pass !== $('authPass2').value) { msg('The two passwords do not match.', 'err'); return }
+          setBusy(true);
+          A.register(name, email, pass).then(function (r) {
+            if (r.verify) {
+              setMode('in'); $('authEmail').value = email; $('authPass').value = '';
+              msg('Account created. We sent a verification link to ' + email + '. Open it, then sign in here. Check spam if you do not see it.', 'ok');
+            } else go();
+          }).catch(fail).then(function () { setBusy(false) });
+        } else {
+          setBusy(true);
+          A.signInEmail(email, pass).then(go).catch(fail).then(function () { setBusy(false) });
+        }
+      };
+
+      $('forgotBtn').onclick = function () {
+        var email = $('authEmail').value.trim();
+        if (!email) { msg('Type your email above first, then press "Forgot password?".', 'err'); return }
+        setBusy(true);
+        A.resetPassword(email).then(function () { msg('If an account exists for ' + email + ', a password-reset link is on its way.', 'ok') })
+          .catch(function (e) { if (e && e.code === 'auth/user-not-found') msg('If an account exists for ' + email + ', a password-reset link is on its way.', 'ok'); else fail(e) })
+          .then(function () { setBusy(false) });
+      };
+
+      $('resendBtn').onclick = function () {
+        var email = $('authEmail').value.trim(), pass = $('authPass').value;
+        if (!email || !pass) { msg('Enter your email and password, then press resend.', 'err'); return }
+        setBusy(true);
+        A.resendVerification(email, pass).then(function () { msg('Verification email sent to ' + email + '.', 'ok') }).catch(fail).then(function () { setBusy(false) });
+      };
+
+      var nav = $('navAuth');
+      nav.onclick = function () { if (signedIn) { A.signOut() } else open('in') };
+      if (A) {
+        A.onChange(function (u) {
+          signedIn = !!u;
+          nav.textContent = u ? 'Sign Out' : 'Sign In / Register';
+          if (u) { var h = document.querySelector('.cta'); if (h) h.textContent = 'OPEN STUDIO \u2197' }
+          else { var h2 = document.querySelector('.cta'); if (h2) h2.textContent = 'ENTER SONICFRAME \u2197' }
+        })
+      }
+
+      var reason = qs.get('reason');
+      if (qs.get('login') === '1' && !signedIn) {
+        open('in');
+        var txt = { signin: 'Please sign in or register to use SonicFrame.', verify: 'Please verify your email address, then sign in.', setup: 'Login is not set up yet. Add your Firebase details to firebase-config.js (see SETUP-AUTH.txt).', sdk: 'The login service could not be loaded. Check your connection and try again.', timeout: 'Sign-in took too long to load. Please try again.' }[reason];
+        if (txt && (A && A.configured || reason === 'setup')) msg(txt, reason === 'signin' ? '' : 'err');
+      }
+    })();
+  </script>
+  <script src="sonicframe-chat-widget.js" defer></script>
+</body>
+
+</html>
