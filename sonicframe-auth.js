@@ -10,6 +10,10 @@
   var root = document.documentElement;
   var isProtected = root.hasAttribute('data-sf-protected');
   var SAFE_NEXT = /^[a-z0-9_-]+\.html(#[\w-]*)?$/i;
+  var LOCK_ENDPOINT = '/.netlify/functions/login-attempts';
+  var LOCKOUT_SECONDS = 300;
+  /* Only real credential rejections count against the user. */
+  var CREDENTIAL_ERRORS = ['auth/invalid-credential', 'auth/wrong-password', 'auth/user-not-found', 'auth/invalid-login-credentials'];
 
   var configured = !!(cfg.apiKey && cfg.projectId && String(cfg.apiKey).indexOf('PASTE') === -1 && String(cfg.projectId).indexOf('PASTE') === -1);
   var sdkLoaded = typeof firebase !== 'undefined' && firebase.auth;
@@ -26,6 +30,50 @@
       if (!firebase.apps.length) firebase.initializeApp(cfg);
       auth = firebase.auth();
     } catch (e) { auth = null; }
+  }
+
+  /* ---------- failed-attempt tracking (server-side) ---------- */
+  function lockedError(retryAfter) {
+    var e = new Error('locked');
+    e.code = 'sf/locked';
+    e.retryAfter = retryAfter > 0 ? retryAfter : LOCKOUT_SECONDS;
+    return e;
+  }
+
+  function attemptRequest(action, email) {
+    return fetch(LOCK_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: action, email: email })
+    }).then(function (r) {
+      if (!r.ok) throw new Error('lock-service HTTP ' + r.status);
+      return r.json();
+    }).catch(function (e) {
+      /* Sign-in stays usable without the limiter, but say why it is idle. */
+      console.warn('Password attempt tracking unavailable:', e);
+      throw e;
+    });
+  }
+
+  /* One password check, gated and counted by the server. */
+  function passwordAttempt(email, pass) {
+    /* If the limiter is unreachable, sign-in still works rather than locking
+       everyone out. */
+    return attemptRequest('check', email).catch(function () { return null; })
+      .then(function (s) {
+        if (s && s.locked) throw lockedError(s.retryAfter);
+        ensure();
+        return auth.signInWithEmailAndPassword(email, pass);
+      }).then(function (r) {
+        attemptRequest('success', email).catch(function () { });
+        return r;
+      }).catch(function (e) {
+        if (!e || e.code === 'sf/locked' || CREDENTIAL_ERRORS.indexOf(e.code) === -1) throw e;
+        return attemptRequest('fail', email).then(function (s) {
+          if (s && s.locked) throw lockedError(s.retryAfter);
+          throw e;
+        }, function () { throw e; });
+      });
   }
 
   function ensure() {
@@ -83,7 +131,8 @@
       'auth/operation-not-allowed': 'This sign-in method is not switched on in Firebase yet (Authentication > Sign-in method).',
       'auth/operation-not-supported-in-this-environment': 'Sign-in needs the site to be opened from http(s), not as a local file. Use your Netlify link or a local server.',
       'auth/account-exists-with-different-credential': 'An account with this email already exists using a different sign-in method.',
-      'auth/user-disabled': 'This account has been disabled.'
+      'auth/user-disabled': 'This account has been disabled.',
+      'sf/locked': 'Too many failed attempts. Please wait 5 minutes and try again.'
     };
     return map[c] || 'Something went wrong. Please try again.';
   }
@@ -114,11 +163,11 @@
         return auth.signInWithPopup(p);
       }).then(function (r) { return r.user; });
     },
+    lockStatus: function (email) {
+      return attemptRequest('check', email).catch(function () { return null; });
+    },
     signInEmail: function (email, pass) {
-      return Promise.resolve().then(function () {
-        ensure();
-        return auth.signInWithEmailAndPassword(email, pass);
-      }).then(function (r) {
+      return passwordAttempt(email, pass).then(function (r) {
         if (opt.REQUIRE_EMAIL_VERIFICATION && !r.user.emailVerified) {
           return auth.signOut().then(function () { var e = new Error('unverified'); e.code = 'sf/unverified'; throw e; });
         }
@@ -140,10 +189,7 @@
       });
     },
     resendVerification: function (email, pass) {
-      return Promise.resolve().then(function () {
-        ensure();
-        return auth.signInWithEmailAndPassword(email, pass);
-      }).then(function (r) {
+      return passwordAttempt(email, pass).then(function (r) {
         var p = r.user.emailVerified ? Promise.resolve() : r.user.sendEmailVerification();
         return p.then(function () { return auth.signOut(); });
       });

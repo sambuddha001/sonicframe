@@ -683,7 +683,40 @@
       var qs = new URLSearchParams(location.search);
 
       function msg(text, kind) { var m = $('authMsg'); if (!text) { m.hidden = true; return } m.hidden = false; m.className = 'msgbox' + (kind ? ' ' + kind : ''); m.textContent = text }
-      function setBusy(b) { busy = b;['googleBtn', 'authSubmit', 'tabIn', 'tabUp', 'forgotBtn', 'resendBtn'].forEach(function (i) { $(i).disabled = b }) }
+      function setBusy(b) {
+        busy = b;['googleBtn', 'authSubmit', 'tabIn', 'tabUp', 'forgotBtn', 'resendBtn'].forEach(function (i) { $(i).disabled = b });
+        if (!b && isLocked()) { $('authPass').disabled = true; $('authSubmit').disabled = true }
+      }
+      /* Lockout state mirrored from the server. The countdown is cosmetic: the
+         server refuses attempts on its own clock. */
+      var lockTimer = null, lockedUntil = 0;
+      function isLocked() { return lockedUntil > Date.now() }
+      function pad2(n) { return (n < 10 ? '0' : '') + n }
+      function renderLock() {
+        var left = Math.ceil((lockedUntil - Date.now()) / 1000);
+        if (left <= 0) { unlock(); return }
+        if (mode === 'up') return; /* registering is not a sign-in attempt */
+        $('authPass').disabled = true; $('authSubmit').disabled = true;
+        msg('Too many failed attempts. Please try again in ' + pad2(Math.floor(left / 60)) + ':' + pad2(left % 60) + ' (5 minutes).', 'err');
+      }
+      function lockFor(seconds) {
+        lockedUntil = Date.now() + Math.max(1, seconds || 300) * 1000;
+        $('authPass').disabled = true; $('authSubmit').disabled = true;
+        renderLock();
+        if (!lockTimer) lockTimer = setInterval(renderLock, 1000);
+      }
+      function unlock() {
+        lockedUntil = 0;
+        if (lockTimer) { clearInterval(lockTimer); lockTimer = null }
+        $('authPass').disabled = false;
+        if (!busy) $('authSubmit').disabled = false;
+        msg('You can sign in again now.', 'ok');
+      }
+      function checkLock() {
+        var email = $('authEmail').value.trim();
+        if (!email || !A || !A.lockStatus) return;
+        A.lockStatus(email).then(function (s) { if (s && s.locked) lockFor(s.retryAfter) });
+      }
       function setMode(m) {
         mode = m; var up = m === 'up';
         $('tabIn').classList.toggle('on', !up); $('tabUp').classList.toggle('on', up);
@@ -693,11 +726,16 @@
         $('authSub').textContent = up ? 'Register to unlock the Studio, modules and AI Co-Pilot.' : 'Sign in to unlock the Studio, modules and AI Co-Pilot.';
         $('authSubmit').textContent = up ? 'Create account \u2197' : 'Sign In \u2197';
         $('forgotBtn').hidden = up; $('resendBtn').hidden = true; msg('');
+        if (up) { $('authPass').disabled = false; $('authSubmit').disabled = false }
+        else if (isLocked()) renderLock();
       }
-      function open(m) { ov.classList.add('show'); setMode(m || 'in'); setTimeout(function () { try { $('googleBtn').focus() } catch (e) { } }, 30) }
+      function open(m) { ov.classList.add('show'); setMode(m || 'in'); checkLock(); setTimeout(function () { try { $('googleBtn').focus() } catch (e) { } }, 30) }
       function close() { ov.classList.remove('show') }
       function go() { location.href = A.nextUrl() }
-      function fail(e) { msg(A.friendlyError(e), 'err'); if (e && e.code === 'sf/unverified') $('resendBtn').hidden = false }
+      function fail(e) {
+        if (e && e.code === 'sf/locked') { $('resendBtn').hidden = true; lockFor(e.retryAfter); return }
+        msg(A.friendlyError(e), 'err'); if (e && e.code === 'sf/unverified') $('resendBtn').hidden = false
+      }
 
       window.openAuth = function (m) { if (signedIn) { go(); return } open(m) };
       window.closeAuth = close;
@@ -714,6 +752,7 @@
       document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close() });
       $('tabIn').onclick = function () { setMode('in') };
       $('tabUp').onclick = function () { setMode('up') };
+      $('authEmail').addEventListener('change', checkLock);
 
       $('googleBtn').onclick = function () {
         if (busy) return; msg(''); setBusy(true);
@@ -722,6 +761,7 @@
 
       $('authForm').onsubmit = function (e) {
         e.preventDefault(); if (busy) return; msg('');
+        if (isLocked()) { renderLock(); return }
         var email = $('authEmail').value.trim(), pass = $('authPass').value;
         if (!email) { msg('Please enter your email address.', 'err'); return }
         if (!pass) { msg('Please enter your password.', 'err'); return }
