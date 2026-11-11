@@ -10,22 +10,52 @@
     @import url('https://fonts.googleapis.com/css2?family=DM+Mono&family=Manrope:wght@400;600;700;800&display=swap');
 
     * {
-      box-sizing: border-box
+      box-sizing: border-box;
     }
 
     body {
       margin: 0;
       background: radial-gradient(ellipse at 10% 0%, #aeb7c018, transparent 36%), linear-gradient(130deg, #070809, #17191d, #08090b);
       color: #f1f3f6;
-      font-family: Manrope, Arial
+      font-family: Manrope, Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sf-skip-link {
+      position: absolute;
+      top: -60px;
+      left: 16px;
+      background: #111419;
+      color: #f1f3f6;
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: 1px solid #7c8ba1;
+      font: 700 12px 'DM Mono', monospace;
+      z-index: 10000;
+      text-decoration: none;
+      transition: top 0.15s ease;
+    }
+
+    .sf-skip-link:focus {
+      top: 14px;
+      outline: 2px solid #cbd2dc;
+      outline-offset: 2px;
+    }
+
+    :focus-visible {
+      outline: 2px solid #cbd2dc !important;
+      outline-offset: 2px !important;
     }
 
     nav {
-      padding: 13px 5%;
+      padding: 13px clamp(14px, 5vw, 60px);
       display: flex;
       justify-content: space-between;
+      align-items: center;
       background: #111419;
-      border-bottom: 1px solid #454b55
+      border-bottom: 1px solid #363d4a;
     }
 
     .brand {
@@ -33,7 +63,7 @@
       text-decoration: none;
       display: flex;
       gap: 11px;
-      align-items: center
+      align-items: center;
     }
 
     .logo {
@@ -47,118 +77,206 @@
     .brand small {
       display: block;
       color: #9ca5b0;
-      font: 9px 'DM Mono'
+      font: 10.5px 'DM Mono';
     }
 
     nav>a:last-child {
       color: #dbe0e7;
       text-decoration: none;
-      font-size: 12px;
-      align-self: center
+      font-size: 13px;
+      align-self: center;
+    }
+    nav>a:last-child:hover {
+      color: #fff;
     }
 
     .wrap {
-      max-width: 900px;
-      margin: 35px auto;
-      padding: 0 16px
-    }
-
-    .eyebrow {
-      font: 10px 'DM Mono';
-      letter-spacing: 2px;
-      color: #cbd1d9
-    }
-
-    .chat {
-      margin-top: 20px;
-      height: min(650px, 72vh);
-      min-height: 420px;
-      border: 1px solid #414852;
-      border-radius: 17px;
-      background: #111419;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden
-    }
-
-    .head {
-      padding: 15px;
-      border-bottom: 1px solid #343a43;
-      font-size: 12px
-    }
-
-    .messages {
-      padding: 17px;
-      overflow: auto;
+      max-width: 960px;
+      width: 100%;
+      margin: 18px auto 20px;
+      padding: 0 clamp(14px, 3vw, 24px);
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 11px
+    }
+
+    .eyebrow {
+      font: 11.5px 'DM Mono';
+      letter-spacing: 2px;
+      color: #cbd1d9;
+    }
+
+    .wrap h1 {
+      margin: 6px 0;
+      font-size: clamp(22px, 4vw, 30px);
+    }
+
+    .chat {
+      margin-top: 14px;
+      flex: 1;
+      min-height: 480px;
+      height: calc(100vh - 230px);
+      border: 1px solid #38404d;
+      border-radius: 16px;
+      background: #111419;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .head {
+      padding: 14px 18px;
+      border-bottom: 1px solid #2d333e;
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #15181f;
+    }
+
+    .messages {
+      padding: 18px;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
 
     .msg {
       max-width: 82%;
-      padding: 12px 14px;
+      padding: 12px 16px;
       border-radius: 12px;
-      font-size: 12px;
-      line-height: 1.7;
-      white-space: pre-wrap
+      font-size: 14px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
     }
 
     .bot {
-      background: #252a31;
-      border: 1px solid #414852;
-      align-self: flex-start
+      background: #1a1e26;
+      border: 1px solid #343c49;
+      align-self: flex-start;
+      color: #e2e7ef;
+    }
+
+    .bot.command-executed {
+      border-left: 3px solid #8e98a7;
+      background: #161920;
+      color: #f1f3f6;
     }
 
     .user {
       background: #e2e6eb;
       color: #11151a;
-      align-self: flex-end
+      font-weight: 600;
+      align-self: flex-end;
+    }
+
+    .prompt-chips {
+      display: flex;
+      gap: 8px;
+      padding: 10px 16px;
+      background: #0d0f14;
+      border-top: 1px solid #232832;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .prompt-chips::-webkit-scrollbar {
+      display: none;
+    }
+
+    .chip-btn {
+      background: #191e26;
+      border: 1px solid #363e4c;
+      color: #cbd5e1;
+      font-size: 12.5px;
+      padding: 6px 12px;
+      border-radius: 14px;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .chip-btn:hover {
+      background: #252d3a;
+      color: #fff;
+      border-color: #586577;
     }
 
     .compose {
       display: flex;
-      gap: 9px;
-      padding: 13px;
-      border-top: 1px solid #343a43
+      gap: 12px;
+      padding: 14px 18px;
+      border-top: 1px solid #282e38;
+      background: #111419;
+      align-items: flex-end;
     }
 
     .compose textarea {
       flex: 1;
       resize: none;
-      min-height: 45px;
-      padding: 12px;
-      border-radius: 9px;
-      background: #080a0d;
-      border: 1px solid #414852;
-      color: white
+      height: 54px;
+      min-height: 54px;
+      max-height: 150px;
+      padding: 14px 16px;
+      border-radius: 11px;
+      background: #090b0e;
+      border: 1px solid #363e4c;
+      color: white;
+      font-family: inherit;
+      font-size: 14.5px;
+      line-height: 1.5;
+      outline: none;
+      overflow-y: hidden;
+      scrollbar-width: thin;
+      scrollbar-color: #363d4a transparent;
+      transition: border-color 0.2s ease;
+    }
+    .compose textarea::-webkit-scrollbar {
+      width: 5px;
+    }
+    .compose textarea::-webkit-scrollbar-thumb {
+      background: #363d4a;
+      border-radius: 4px;
+    }
+    .compose textarea:focus {
+      border-color: #6a7688;
     }
 
     .compose button {
+      height: 54px;
       border: 0;
-      border-radius: 9px;
-      background: linear-gradient(110deg, #f0f2f5, #8e969f);
+      border-radius: 11px;
+      background: linear-gradient(110deg, #f0f2f5, #9ca5b0);
       color: #111;
-      font-weight: 900;
-      padding: 0 17px;
-      cursor: pointer
+      font-weight: 800;
+      padding: 0 22px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: filter 0.15s ease;
+      white-space: nowrap;
+    }
+    .compose button:hover {
+      filter: brightness(1.1);
     }
 
     footer {
       text-align: center;
       color: #7c8591;
-      padding: 22px;
-      font: 9px 'DM Mono'
+      padding: 16px 20px;
+      font: 10.5px 'DM Mono';
     }
 
     @media(max-width:550px) {
       .msg {
-        max-width: 96%
+        max-width: 95%;
       }
 
       .chat {
-        height: 70vh
+        height: calc(100vh - 200px);
+        min-height: 420px;
       }
     }
   </style>
@@ -190,59 +308,110 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script src="firebase-config.js"></script>
   <script src="sonicframe-auth.js"></script>
+  <script type="module" src="sonicframe-copilot.js"></script>
 </head>
 
 <body>
-  <nav>
-    <a class="brand" href="index.html">
+  <a href="#main-content" class="sf-skip-link">Skip to main content</a>
+  <nav aria-label="Primary navigation">
+    <a class="brand" href="index.html" aria-label="SonicFrame Home">
       <img src="logo-edited.png" alt="SonicFrame Logo" class="logo">
       <div><b>SONICFRAME</b><small>A PROJECT OF TETRABYTE</small></div>
     </a>
-    <a href="studio.html">← Back to Studio</a>
+    <a href="studio.html" aria-label="Return to Studio">← Back to Studio</a>
   </nav>
-  <div class="wrap">
+  <main id="main-content" tabindex="-1" class="wrap">
     <div class="eyebrow">CREATIVE ASSISTANT · TETRABYTE</div>
     <h1>SonicFrame AI Co-Pilot</h1>
-    <p style="color:#aab2bd;font-size:12px">Ask about motion analysis, Foley ideas, sound design or the studio workflow.
+    <p style="color:#aab2bd;font-size:13.5px;margin:4px 0 16px 0">Talk directly to your sound designer co-pilot. Modify foley parameters, automate stems, and re-tune your composition locked to visual motion.
     </p>
-    <div class="chat">
-      <div class="head">✦ &nbsp; Creative Co-Pilot <span style="color:#4ecca3">· Live AI Active</span></div>
-      <div class="messages" id="messages">
-        <div class="msg bot">Hi! I can help you plan sound design, understand motion analysis and use SonicFrame. Ask me
-          anything!</div>
+
+    <div class="chat" role="region" aria-label="AI Co-pilot chat interface">
+      <div class="head">
+        <div>✦ &nbsp; Creative Co-Pilot <span style="color:#c5cbd2">· Live Studio Orchestrator</span></div>
       </div>
-      <form class="compose" id="form">
-        <textarea id="input" placeholder="Ask your question…" required></textarea>
-        <button>Send ↗</button>
+      <div class="messages" id="messages" role="log" aria-live="polite" aria-label="Conversation history">
+        <div class="msg bot">Hi! I am your SonicFrame Creative Co-Pilot. I have live bidirectional context of your video timeline and procedural audio engine.
+
+You can ask me to mutate sounds directly:
+• <em>"Make footsteps sound heavier / like wet cobblestone"</em>
+• <em>"Increase score tension in the final 3 seconds"</em>
+• <em>"Double the decay time on all metallic clashes"</em>
+• <em>"Set key to D minor / cinematic dark"</em>
+• <em>"Mute the atmosphere stem"</em></div>
+      </div>
+
+      <div class="prompt-chips" role="group" aria-label="Quick sound command suggestions">
+        <button class="chip-btn" data-cmd="Make footsteps sound heavier / like wet cobblestone" aria-label="Prompt: Wet cobblestone footsteps">Wet cobblestone footsteps</button>
+        <button class="chip-btn" data-cmd="Increase score tension in the final 3 seconds" aria-label="Prompt: Final 3s tension">Final 3s tension</button>
+        <button class="chip-btn" data-cmd="Double the decay time on all metallic clashes" aria-label="Prompt: Double metallic decay">Double metallic decay</button>
+        <button class="chip-btn" data-cmd="Set key to D minor / cinematic dark" aria-label="Prompt: Key: D minor">Key: D minor</button>
+        <button class="chip-btn" data-cmd="Mute the atmosphere stem" aria-label="Prompt: Mute atmosphere">Mute atmosphere</button>
+      </div>
+
+      <form class="compose" id="form" aria-label="Compose sound command">
+        <textarea id="input" placeholder="Type a sound command (Enter to send, Shift+Enter for new line)…" rows="1" aria-label="Sound command message" required></textarea>
+        <button type="submit" aria-label="Send sound command">Send ↗</button>
       </form>
     </div>
-  </div>
-  <footer>SONICFRAME · A PROJECT OF TETRABYTE</footer>
-  <script>
+  </main>
+  <footer role="contentinfo">SONICFRAME · A PROJECT OF TETRABYTE</footer>
+
+  <script type="module">
+    import SonicFrameCopilot from './sonicframe-copilot.js';
+    window.SonicFrameCopilot = SonicFrameCopilot;
     const box = document.getElementById('messages'), inp = document.getElementById('input');
 
-    function add(t, c) {
+    function syncStateUI() {
+      if (!window.SonicFrameCopilot) return;
+      const state = SonicFrameCopilot.getActiveState();
+      if (!state.cueSheet) {
+        const initial = SonicFrameCopilot.generateLocalCueSheet({ durationSeconds: 15.0 }, 'cinematic_dark');
+        SonicFrameCopilot.setActiveState({ telemetry: { durationSeconds: 15.0 }, cueSheet: initial, mood: 'cinematic_dark' });
+      }
+    }
+
+    syncStateUI();
+
+    function add(t, c, isCommand) {
       let d = document.createElement('div');
-      d.className = 'msg ' + c;
+      d.className = 'msg ' + c + (isCommand ? ' command-executed' : '');
       d.textContent = t;
       box.append(d);
       box.scrollTop = box.scrollHeight;
+      return d;
     }
 
     async function send(t) {
-      if (!t.trim()) return;
-      let userMsg = t;
+      if (!t || !t.trim()) return;
+      let userMsg = t.trim();
       add(userMsg, 'user');
       inp.value = '';
+      inp.style.height = '54px';
+      inp.style.overflowY = 'hidden';
 
       let loadingId = 'msg_' + Math.random().toString(36).substr(2, 9);
       let loadingDiv = document.createElement('div');
       loadingDiv.id = loadingId;
       loadingDiv.className = 'msg bot';
-      loadingDiv.textContent = 'Thinking...';
+      loadingDiv.textContent = 'Processing command with video telemetry…';
       box.append(loadingDiv);
       box.scrollTop = box.scrollHeight;
 
+      // 1. Check if SonicFrameCopilot can execute a sound change
+      if (window.SonicFrameCopilot) {
+        const state = SonicFrameCopilot.getActiveState();
+        const cmdResult = SonicFrameCopilot.handleCommand(userMsg, state.cueSheet, state.telemetry);
+        if (cmdResult && cmdResult.executed) {
+          syncStateUI();
+          loadingDiv.className = 'msg bot command-executed';
+          loadingDiv.textContent = '✦ ' + cmdResult.message;
+          box.scrollTop = box.scrollHeight;
+          return;
+        }
+      }
+
+      // 2. Otherwise pass to Netlify chat endpoint or local audio advice
       try {
         let tk = await (window.SFAuth ? SFAuth.getToken() : Promise.resolve(''));
         let r = await fetch('/.netlify/functions/chat', {
@@ -258,14 +427,53 @@
         document.getElementById(loadingId).textContent = replyText;
         box.scrollTop = box.scrollHeight;
       } catch (e) {
-        document.getElementById(loadingId).textContent = 'Backend request failed: ' + e.message + '. Please check your Netlify deployment and API keys.';
+        // Fallback to copilot guidance without showing broken network errors
+        if (window.SonicFrameCopilot) {
+          const fallback = SonicFrameCopilot.handleCommand(userMsg);
+          document.getElementById(loadingId).textContent = fallback.message;
+        } else {
+          document.getElementById(loadingId).textContent = '✦ Co-Pilot ready. Try commanding sound mutations like "Make footsteps heavier" or "Increase tension in final 3s".';
+        }
         box.scrollTop = box.scrollHeight;
       }
     }
 
+    // Auto-grow textarea on typing without premature scrollbars
+    inp.addEventListener('input', function () {
+      this.style.height = 'auto';
+      var nextH = Math.min(150, Math.max(54, this.scrollHeight));
+      this.style.height = nextH + 'px';
+      this.style.overflowY = this.scrollHeight > 150 ? 'auto' : 'hidden';
+    });
+
+    // Enter sends, Shift+Enter adds newline
+    inp.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        if (e.shiftKey) {
+          // Allow default Shift+Enter to create a newline
+          return;
+        }
+        e.preventDefault();
+        const text = inp.value.trim();
+        if (text) {
+          send(text);
+        }
+      }
+    });
+
+    document.querySelectorAll('.chip-btn').forEach(btn => {
+      btn.onclick = () => {
+        inp.value = btn.getAttribute('data-cmd');
+        send(inp.value);
+      };
+    });
+
     document.getElementById('form').onsubmit = e => {
       e.preventDefault();
-      send(inp.value);
+      const text = inp.value.trim();
+      if (text) {
+        send(text);
+      }
     };
   </script>
 </body>

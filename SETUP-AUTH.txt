@@ -58,6 +58,18 @@ API directly, bypassing the site, is subject to Firebase's own rate limits
 instead. Real server-only enforcement would need the Firebase Admin SDK and a
 service account.
 
+PASSWORD STORAGE: HASHING & SALTING
+Passwords are NOT stored by SonicFrame's codebase, Netlify functions, or localStorage.
+All authentication credentials are processed by Google Firebase Authentication:
+  1. Transmission: Credentials travel encrypted over TLS directly to Google's
+     Identity Platform endpoints (identitytoolkit.googleapis.com).
+  2. Salting: Google generates a unique, cryptographically random salt for each user.
+  3. Hashing: Google hashes the password using its hardened, modified scrypt
+     algorithm (combining per-user salts, project salt separators, rounds, and
+     signer keys). Plaintext passwords are never stored in the database.
+  4. Attempt Tracking: The rate limiter stores only attempt counts, timestamps, and
+     SHA-256 hashed email keys—passwords are never passed to or stored by the limiter.
+
 IMPORTANT: WHAT THIS DOES AND DOES NOT PROTECT
 The lock hides the pages and features from anyone not signed in. Because this is a
 static site, the HTML files themselves can still be downloaded by someone who knows

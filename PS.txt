@@ -1,0 +1,7 @@
+Optical-Flow Driven Foley & Adaptive Score Engine
+
+Target Tracks: Soundscapes & Composition + Best Creative Artist Co-Pilot
+
+The Real Problem: Indie animators and game devs waste days manually lining up sound effects (footsteps, sword clashes, ambient wind) and tempo changes to match visual action on screen.
+
+The Winning Build: Instead of a "type a prompt to make music" box, build a visual timeline where a creator drops a silent 15-second animation clip. Run OpenCV optical flow and frame-difference analysis to detect exact millisecond motion spikes, impact frames, and color-temperature shifts. Feed that mathematical telemetry into a structured LLM orchestrator that triggers synchronized WebAudio procedural stems and Foley hits locked to the exact video frames.

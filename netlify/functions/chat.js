@@ -35,10 +35,19 @@ export default async (req) => {
   }
 
   try {
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
+    const nvidiaKey =
+      process.env.NVIDIA_API_KEY ||
+      (process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.startsWith("nvapi-")
+        ? process.env.GEMINI_API_KEY
+        : null);
+    const geminiKey =
+      process.env.GEMINI_API_KEY && !process.env.GEMINI_API_KEY.startsWith("nvapi-")
+        ? process.env.GEMINI_API_KEY
+        : null;
+
+    if (!nvidiaKey && !geminiKey) {
       throw new Error(
-        "GEMINI_API_KEY is not configured. Add it in Netlify → Site configuration → Environment variables."
+        "No AI API key configured. Add NVIDIA_API_KEY or GEMINI_API_KEY to your environment variables."
       );
     }
 
@@ -52,9 +61,49 @@ export default async (req) => {
       });
     }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
+    // --- Path A: NVIDIA API (e.g. nvapi-...) ---
+    if (nvidiaKey) {
+      const model = process.env.NVIDIA_MODEL || "google/diffusiongemma-26b-a4b-it";
+      const nvRes = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${nvidiaKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model,
+          messages: [
+            { role: "system", content: SYSTEM_PROMPT },
+            { role: "user", content: message.trim() },
+          ],
+          temperature: 0.3,
+          max_tokens: 350,
+        }),
+      });
+
+      if (!nvRes.ok) {
+        const errText = await nvRes.text();
+        throw new Error(`NVIDIA API HTTP ${nvRes.status}: ${errText}`);
+      }
+
+      const nvData = await nvRes.json();
+      const reply =
+        nvData.choices?.[0]?.message?.content?.trim() ||
+        "Sorry, I could not generate a response.";
+
+      return new Response(
+        JSON.stringify({ reply, model, provider: "nvidia" }),
+        {
+          status: 200,
+          headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // --- Path B: Google Gemini API ---
+    const genAI = new GoogleGenerativeAI(geminiKey);
     const model = genAI.getGenerativeModel({
-      model: "gemini-3.5-flash-lite",
+      model: "gemini-1.5-flash",
       systemInstruction: SYSTEM_PROMPT,
     });
 
@@ -63,24 +112,25 @@ export default async (req) => {
       result.response?.text()?.trim() ||
       "Sorry, I could not generate a response. Please try again.";
 
-    return new Response(JSON.stringify({ reply }), {
-      status: 200,
-      headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({ reply, model: "gemini-1.5-flash", provider: "google" }),
+      {
+        status: 200,
+        headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
+      }
+    );
   } catch (error) {
     console.error("Chat function error:", error);
 
     const statusCode = error?.status || error?.httpStatusCode || 500;
-    let userMessage;
+    let userMessage = error.message || "Internal server error";
 
-    if (statusCode === 400 || error.message?.includes("API_KEY_INVALID")) {
-      userMessage = "Gemini API key is invalid. Please check your Netlify environment variable.";
+    if (error.message?.includes("nvapi") || error.message?.includes("NVIDIA")) {
+      userMessage = error.message;
+    } else if (statusCode === 400 || error.message?.includes("API_KEY_INVALID")) {
+      userMessage = "AI API key is invalid. Please check your environment variables.";
     } else if (statusCode === 429) {
       userMessage = "Rate limit exceeded. Please wait a moment and try again.";
-    } else if (error.message?.includes("SAFETY")) {
-      userMessage = "The response was blocked by safety filters. Please rephrase your question.";
-    } else {
-      userMessage = error.message || "Internal server error";
     }
 
     return new Response(JSON.stringify({ error: userMessage }), {

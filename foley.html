@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Foley & Sound Design | SonicFrame</title>
     <link rel="icon" type="image/png" href="logo-edited.png">
+    <link rel="stylesheet" href="sonicframe-chat-widget.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap');
 
@@ -20,6 +21,32 @@
             color: #f1f3f6;
             font-family: Manrope, Arial;
             overflow-x: hidden
+        }
+
+        .sf-skip-link {
+            position: absolute;
+            top: -60px;
+            left: 16px;
+            background: #15181e;
+            color: #f1f3f6;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid #7c8ba1;
+            font: 700 12px 'DM Mono', monospace;
+            z-index: 10000;
+            text-decoration: none;
+            transition: top 0.15s ease;
+        }
+
+        .sf-skip-link:focus {
+            top: 14px;
+            outline: 2px solid #cbd2dc;
+            outline-offset: 2px;
+        }
+
+        :focus-visible {
+            outline: 2px solid #cbd2dc !important;
+            outline-offset: 2px !important;
         }
 
         body:before {
@@ -79,7 +106,7 @@
 
         .brand small {
             display: block;
-            font: 9px 'DM Mono';
+            font: 10.5px 'DM Mono';
             color: #9da5b0;
             letter-spacing: 1px;
             margin-top: 3px
@@ -98,7 +125,7 @@
             position: relative;
             text-decoration: none;
             color: #d2d6dc;
-            font: 700 10px 'DM Mono';
+            font: 700 11.5px 'DM Mono';
             letter-spacing: .5px;
             padding: 11px 12px;
             border: 1px solid transparent;
@@ -140,7 +167,7 @@
         }
 
         .eyebrow {
-            font: 10px 'DM Mono';
+            font: 11.5px 'DM Mono';
             letter-spacing: 2px;
             color: #c8ced6
         }
@@ -154,7 +181,7 @@
         .lead {
             color: #a7afb9;
             line-height: 1.8;
-            font-size: 14px;
+            font-size: 15px;
             max-width: 780px
         }
 
@@ -168,13 +195,13 @@
         }
 
         .panel h2 {
-            font-size: 18px;
+            font-size: 20px;
             margin: 0 0 10px
         }
 
         .panel p {
             color: #aab1bb;
-            font-size: 12px;
+            font-size: 13.5px;
             line-height: 1.8
         }
 
@@ -194,13 +221,13 @@
 
         .step b {
             display: block;
-            font-size: 12px;
+            font-size: 13.5px;
             margin-bottom: 7px
         }
 
         .step span {
             color: #a1a9b4;
-            font-size: 11px;
+            font-size: 12px;
             line-height: 1.6
         }
 
@@ -214,7 +241,7 @@
             border: 0;
             padding: 13px 18px;
             box-shadow: 0 8px 24px #fff2;
-            font-size: 11px
+            font-size: 12px
         }
 
         .cta:hover {
@@ -240,7 +267,7 @@
             border: 1px solid #454b55;
             border-radius: 10px;
             padding: 10px 13px;
-            font-size: 10px;
+            font-size: 11.5px;
             background: #171a1f;
             transition: .2s
         }
@@ -256,7 +283,7 @@
             padding: 23px;
             border-top: 1px solid #ffffff18;
             color: #737d89;
-            font: 9px 'DM Mono';
+            font: 10.5px 'DM Mono';
             letter-spacing: 1px
         }
 
@@ -324,20 +351,21 @@
 </head>
 
 <body>
-    <nav><a class="brand" href="index.html">
+    <a href="#main-content" class="sf-skip-link">Skip to main content</a>
+    <nav aria-label="Primary navigation"><a class="brand" href="index.html" aria-label="SonicFrame Home">
             <img src="logo-edited.png" alt="SonicFrame Logo" class="logo">
             <div><b>SONICFRAME</b><small>A PROJECT OF TETRABYTE</small></div>
         </a>
         <div class="links"><a href="index.html">OVERVIEW</a><a href="studio.html">STUDIO</a><a
-                href="motion.html">MOTION</a><a href="foley.html">FOLEY</a><a href="timeline.html">TIMELINE</a><a
+                href="motion.html">MOTION</a><a href="foley.html" aria-current="page">FOLEY</a><a href="timeline.html">TIMELINE</a><a
                 href="mixer.html">MIXER</a><a href="chatbot.html">AI CO-PILOT</a></div>
     </nav>
-    <main>
+    <main id="main-content" tabindex="-1">
         <div class="eyebrow">TETRABYTE CREATIVE TOOLKIT · MODULE 02</div>
         <h1>Foley & Sound Design</h1>
         <p class="lead">Create procedural impact cues, movement pulses and atmospheric layers without external sample
             packs.</p>
-        <section class="panel">
+        <section class="panel" aria-label="Procedural audio synthesis overview">
             <h2>Procedural audio synthesis</h2>
             <p>SonicFrame uses the browser Web Audio API to synthesize low-frequency impacts, bright transients,
                 movement pulses and texture sweeps. Load a clip in Studio, analyze it, then play the synchronized mix.
@@ -349,16 +377,16 @@
                         events.</span></div>
                 <div class="step"><b>Scene texture</b><span>Noise shimmer and tonal transitions for visual
                         shifts.</span></div>
-            </div><a class="cta" href="studio.html#mixer">OPEN STEM MIXER ↗</a>
+            </div><a class="cta" href="studio.html#mixer" aria-label="Open stem mixer in studio">OPEN STEM MIXER ↗</a>
         </section>
     </main>
-    <div class="bottom">
+    <div class="bottom" role="navigation" aria-label="Module directory">
         <div class="eyebrow" style="margin-bottom:12px">EXPLORE OTHER MODULES</div>
         <div class="module-links"><a href="motion.html">Motion Intelligence</a><a href="foley.html">Foley & Sound
                 Design</a><a href="timeline.html">Adaptive Timeline</a><a href="mixer.html">Stem Mixer</a><a
                 href="studio.html">Full Studio ↗</a></div>
     </div>
-    <footer>SONICFRAME · A PROJECT OF TETRABYTE · LOCAL-FIRST CREATIVE WORKSPACE</footer>
+    <footer role="contentinfo">SONICFRAME · A PROJECT OF TETRABYTE · LOCAL-FIRST CREATIVE WORKSPACE</footer>
     <script src="sonicframe-chat-widget.js" defer></script>
 </body>
 

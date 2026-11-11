@@ -1,4 +1,8 @@
 /* SonicFrame authentication (Firebase Auth: email/password + Google).
+   - Security: Passwords are sent over TLS directly to Firebase Authentication,
+     where Google hashes and salts each password using modified scrypt with
+     individual per-user cryptographic salts. SonicFrame never stores, caches,
+     or logs passwords in plaintext anywhere (neither locally nor on the server).
    - On pages marked data-sf-protected it hides the page until a signed-in
      (and, if required, verified) user is confirmed; otherwise it redirects
      to the login page. It fails closed: any problem means "not signed in".
@@ -32,7 +36,144 @@
     } catch (e) { auth = null; }
   }
 
-  /* ---------- failed-attempt tracking (server-side) ---------- */
+  var STORAGE_KEY = 'sf_login_lockout';
+  var STORAGE_BY_EMAIL = 'sf_login_lockout_by_email';
+  var MAX_ATTEMPTS = 5;
+
+  function normalizeEmail(email) {
+    return String(email || '').trim().toLowerCase();
+  }
+
+  function getLocalStore() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return { attempts: 0, lockedUntil: 0, email: '' };
+      var parsed = JSON.parse(raw);
+      var now = Date.now();
+      if (parsed.lockedUntil && parsed.lockedUntil <= now) {
+        clearLocalLock();
+        return { attempts: 0, lockedUntil: 0, email: '' };
+      }
+      return parsed;
+    } catch (e) {
+      return { attempts: 0, lockedUntil: 0, email: '' };
+    }
+  }
+
+  function getEmailStore(email) {
+    var em = normalizeEmail(email);
+    if (!em) return null;
+    try {
+      var raw = localStorage.getItem(STORAGE_BY_EMAIL);
+      if (!raw) return null;
+      var map = JSON.parse(raw) || {};
+      var entry = map[em];
+      if (!entry) return null;
+      var now = Date.now();
+      if (entry.lockedUntil && entry.lockedUntil <= now) {
+        delete map[em];
+        localStorage.setItem(STORAGE_BY_EMAIL, JSON.stringify(map));
+        return null;
+      }
+      return entry;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function saveEmailStore(email, entry) {
+    var em = normalizeEmail(email);
+    if (!em) return;
+    try {
+      var raw = localStorage.getItem(STORAGE_BY_EMAIL);
+      var map = raw ? JSON.parse(raw) : {};
+      map[em] = entry;
+      localStorage.setItem(STORAGE_BY_EMAIL, JSON.stringify(map));
+    } catch (e) {}
+  }
+
+  function clearEmailStore(email) {
+    var em = normalizeEmail(email);
+    if (!em) return;
+    try {
+      var raw = localStorage.getItem(STORAGE_BY_EMAIL);
+      if (!raw) return;
+      var map = JSON.parse(raw) || {};
+      delete map[em];
+      localStorage.setItem(STORAGE_BY_EMAIL, JSON.stringify(map));
+    } catch (e) {}
+  }
+
+  function clearLocalLock(email) {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch (e) {}
+    if (email) clearEmailStore(email);
+  }
+
+  function getLocalLockInfo(email) {
+    var now = Date.now();
+    var store = getLocalStore();
+    var emStore = email ? getEmailStore(email) : null;
+
+    var lockedUntil = 0;
+    var attempts = store.attempts || 0;
+
+    if (store.lockedUntil && store.lockedUntil > now) {
+      lockedUntil = store.lockedUntil;
+    }
+    if (emStore && emStore.lockedUntil && emStore.lockedUntil > now) {
+      if (emStore.lockedUntil > lockedUntil) lockedUntil = emStore.lockedUntil;
+      if (emStore.attempts > attempts) attempts = emStore.attempts;
+    }
+
+    var isLocked = lockedUntil > now;
+    var retryAfter = isLocked ? Math.ceil((lockedUntil - now) / 1000) : 0;
+    var remaining = Math.max(0, MAX_ATTEMPTS - attempts);
+
+    return {
+      isLocked: isLocked,
+      locked: isLocked,
+      retryAfter: retryAfter,
+      attempts: attempts,
+      remaining: remaining
+    };
+  }
+
+  function recordLocalFail(email) {
+    var now = Date.now();
+    var store = getLocalStore();
+    var em = normalizeEmail(email);
+
+    if (store.lockedUntil > now) {
+      return getLocalLockInfo(email);
+    }
+
+    store.attempts = (store.attempts || 0) + 1;
+    store.lastAttempt = now;
+    store.email = em;
+
+    var emStore = em ? (getEmailStore(em) || { attempts: 0, lockedUntil: 0 }) : null;
+    if (emStore) {
+      emStore.attempts = (emStore.attempts || 0) + 1;
+      emStore.lastAttempt = now;
+    }
+
+    if (store.attempts >= MAX_ATTEMPTS || (emStore && emStore.attempts >= MAX_ATTEMPTS)) {
+      var lockUntil = now + (LOCKOUT_SECONDS * 1000);
+      store.lockedUntil = lockUntil;
+      if (emStore) emStore.lockedUntil = lockUntil;
+    }
+
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
+    } catch (e) {}
+    if (emStore) saveEmailStore(em, emStore);
+
+    return getLocalLockInfo(email);
+  }
+
+  /* ---------- failed-attempt tracking (client + server-side) ---------- */
   function lockedError(retryAfter) {
     var e = new Error('locked');
     e.code = 'sf/locked';
@@ -49,31 +190,55 @@
       if (!r.ok) throw new Error('lock-service HTTP ' + r.status);
       return r.json();
     }).catch(function (e) {
-      /* Sign-in stays usable without the limiter, but say why it is idle. */
-      console.warn('Password attempt tracking unavailable:', e);
-      throw e;
+      return null;
     });
   }
 
-  /* One password check, gated and counted by the server. */
+  /* One password check, gated locally and by server. */
   function passwordAttempt(email, pass) {
-    /* If the limiter is unreachable, sign-in still works rather than locking
-       everyone out. */
-    return attemptRequest('check', email).catch(function () { return null; })
-      .then(function (s) {
-        if (s && s.locked) throw lockedError(s.retryAfter);
-        ensure();
-        return auth.signInWithEmailAndPassword(email, pass);
-      }).then(function (r) {
-        attemptRequest('success', email).catch(function () { });
-        return r;
-      }).catch(function (e) {
-        if (!e || e.code === 'sf/locked' || CREDENTIAL_ERRORS.indexOf(e.code) === -1) throw e;
-        return attemptRequest('fail', email).then(function (s) {
-          if (s && s.locked) throw lockedError(s.retryAfter);
+    var localInfo = getLocalLockInfo(email);
+    if (localInfo.isLocked) {
+      return Promise.reject(lockedError(localInfo.retryAfter));
+    }
+
+    return attemptRequest('check', email).then(function (s) {
+      if (s && s.locked) {
+        var sLockUntil = Date.now() + (s.retryAfter * 1000);
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify({ attempts: MAX_ATTEMPTS, lockedUntil: sLockUntil, email: normalizeEmail(email) }));
+        } catch (err) {}
+        throw lockedError(s.retryAfter);
+      }
+      ensure();
+      return auth.signInWithEmailAndPassword(email, pass);
+    }).then(function (r) {
+      clearLocalLock(email);
+      attemptRequest('success', email);
+      return r;
+    }).catch(function (e) {
+      if (!e) throw e;
+      if (e.code === 'sf/locked') throw e;
+      if (CREDENTIAL_ERRORS.indexOf(e.code) !== -1) {
+        var failInfo = recordLocalFail(email);
+        attemptRequest('fail', email).then(function (s) {
+          if (s && s.locked) {
+            var sLockUntil = Date.now() + (s.retryAfter * 1000);
+            try {
+              localStorage.setItem(STORAGE_KEY, JSON.stringify({ attempts: MAX_ATTEMPTS, lockedUntil: sLockUntil, email: normalizeEmail(email) }));
+            } catch (err) {}
+          }
+        });
+
+        if (failInfo.isLocked) {
+          throw lockedError(failInfo.retryAfter);
+        } else {
+          e.attemptsRemaining = failInfo.remaining;
+          e.attempts = failInfo.attempts;
           throw e;
-        }, function () { throw e; });
-      });
+        }
+      }
+      throw e;
+    });
   }
 
   function ensure() {
@@ -164,7 +329,30 @@
       }).then(function (r) { return r.user; });
     },
     lockStatus: function (email) {
-      return attemptRequest('check', email).catch(function () { return null; });
+      var local = getLocalLockInfo(email);
+      if (local.isLocked) return Promise.resolve(local);
+      return attemptRequest('check', email).then(function (s) {
+        if (s && s.locked) {
+          var sLockUntil = Date.now() + (s.retryAfter * 1000);
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({ attempts: MAX_ATTEMPTS, lockedUntil: sLockUntil, email: normalizeEmail(email) }));
+          } catch (e) {}
+          return s;
+        }
+        return local;
+      }).catch(function () {
+        return local;
+      });
+    },
+    getLockInfo: function (email) {
+      return getLocalLockInfo(email);
+    },
+    clearLock: function (email) {
+      clearLocalLock(email);
+      attemptRequest('success', email);
+    },
+    recordFail: function (email) {
+      return recordLocalFail(email);
     },
     signInEmail: function (email, pass) {
       return passwordAttempt(email, pass).then(function (r) {

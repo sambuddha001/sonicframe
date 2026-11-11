@@ -2,6 +2,14 @@
   "name": "sonicframe",
   "version": "1.0.0",
   "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "start:python": "python3 -m http.server 8000",
+    "test": "node test/test_optical_flow_telemetry.js && node test/orchestrator-test.js && node test_sonicframe_dsp.js",
+    "test:flow": "node test/test_optical_flow_telemetry.js",
+    "test:orchestrator": "node test/orchestrator-test.js",
+    "test:dsp": "node test_sonicframe_dsp.js"
+  },
   "dependencies": {
     "@google/generative-ai": "^0.24.0",
     "@netlify/blobs": "^11.1.9"

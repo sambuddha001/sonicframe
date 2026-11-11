@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>SonicFrame | TetraByte</title>
   <link rel="icon" type="image/png" href="logo-edited.png">
+  <link rel="stylesheet" href="sonicframe-chat-widget.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=DM+Mono&family=Manrope:wght@400;500;600;700;800&display=swap');
 
@@ -19,6 +20,32 @@
       color: #f2f4f6;
       font-family: Manrope, Arial;
       min-height: 100vh
+    }
+
+    .sf-skip-link {
+      position: absolute;
+      top: -60px;
+      left: 16px;
+      background: #111419;
+      color: #f2f4f6;
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: 1px solid #7c8ba1;
+      font: 700 12px 'DM Mono', monospace;
+      z-index: 10000;
+      text-decoration: none;
+      transition: top 0.15s ease;
+    }
+
+    .sf-skip-link:focus {
+      top: 14px;
+      outline: 2px solid #cbd2dc;
+      outline-offset: 2px;
+    }
+
+    :focus-visible {
+      outline: 2px solid #cbd2dc !important;
+      outline-offset: 2px !important;
     }
 
     nav {
@@ -52,7 +79,7 @@
     .brand small {
       display: block;
       color: #9ca5b0;
-      font: 9px 'DM Mono';
+      font: 10.5px 'DM Mono';
       letter-spacing: 1px;
       margin-top: 3px
     }
@@ -71,7 +98,7 @@
       border: 1px solid #454b55;
       border-radius: 9px;
       background: #ffffff08;
-      font: 700 10px 'DM Mono';
+      font: 700 11.5px 'DM Mono';
       cursor: pointer;
       transition: .2s
     }
@@ -97,7 +124,7 @@
     }
 
     .eyebrow {
-      font: 10px 'DM Mono';
+      font: 11.5px 'DM Mono';
       letter-spacing: 2px;
       color: #cbd1d9
     }
@@ -131,13 +158,34 @@
       color: #111;
       text-decoration: none;
       font-weight: 900;
-      font-size: 11px
+      font-size: 11px;
+      transition: transform 0.22s ease, box-shadow 0.22s ease, filter 0.22s ease, background 0.22s ease, border-color 0.22s ease;
+    }
+
+    .cta:hover,
+    .cta:focus-visible {
+      transform: translateY(-2px);
+      box-shadow: 0 0 24px rgba(255, 255, 255, 0.55), 0 0 48px rgba(200, 210, 225, 0.35), 0 8px 24px rgba(0, 0, 0, 0.55);
+      filter: brightness(1.08);
+      outline: none;
     }
 
     .cta.secondary {
       background: #171a1f;
       color: #e7eaee;
-      border: 1px solid #535b66
+      border: 1px solid #535b66;
+      transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease, background 0.22s ease, color 0.22s ease;
+    }
+
+    .cta.secondary:hover,
+    .cta.secondary:focus-visible {
+      transform: translateY(-2px);
+      background: #20242b;
+      color: #ffffff;
+      border-color: #cbd2dc;
+      box-shadow: 0 0 22px rgba(200, 215, 235, 0.4), 0 0 45px rgba(255, 255, 255, 0.18), inset 0 0 14px rgba(255, 255, 255, 0.1);
+      filter: brightness(1.05);
+      outline: none;
     }
 
     .visual {
@@ -161,7 +209,7 @@
     .visual small {
       position: absolute;
       bottom: 22px;
-      font: 10px 'DM Mono';
+      font: 11px 'DM Mono';
       letter-spacing: 2px;
       color: #aeb6c0
     }
@@ -205,13 +253,13 @@
     .card b {
       display: block;
       margin: 12px 0 7px;
-      font-size: 12px
+      font-size: 13.5px
     }
 
     .card small {
       color: #9da6b1;
       line-height: 1.6;
-      font-size: 10px
+      font-size: 11.5px
     }
 
     .overlay {
@@ -272,7 +320,7 @@
       padding: 22px;
       border-top: 1px solid #ffffff17;
       color: #79828e;
-      font: 9px 'DM Mono'
+      font: 10.5px 'DM Mono'
     }
 
     /* Floating musical notation across the landing page */
@@ -410,6 +458,14 @@
 
     @media(prefers-reduced-motion:reduce) {
 
+      .cta,
+      .cta:hover,
+      .cta.secondary,
+      .cta.secondary:hover {
+        transform: none !important;
+        transition: none !important;
+      }
+
       .music-symbol,
       .audio-track span {
         animation: none
@@ -546,7 +602,15 @@
 
     .auth button:disabled {
       opacity: .55;
-      cursor: wait
+      cursor: not-allowed
+    }
+
+    .auth input:disabled {
+      opacity: .5;
+      background: #12151a;
+      border-color: #2b313a;
+      color: #727b87;
+      cursor: not-allowed
     }
 
     .auth .row2 {
@@ -593,6 +657,22 @@
       color: #c8f3d9
     }
 
+    .msgbox-timer {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-left: 6px;
+      padding: 1px 7px;
+      border-radius: 5px;
+      background: rgba(255, 75, 95, 0.16);
+      border: 1px solid rgba(255, 75, 95, 0.35);
+      color: #ffa8b2;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
     .auth .fine {
       font-size: 10px;
       color: #7d8794;
@@ -607,24 +687,25 @@
 </head>
 
 <body>
+  <a href="#main-content" class="sf-skip-link">Skip to main content</a>
   <div class="music-field" id="musicField" aria-hidden="true"></div>
-  <nav><a class="brand" href="index.html">
+  <nav aria-label="Primary site navigation"><a class="brand" href="index.html" aria-label="SonicFrame Home">
       <img src="logo-edited.png" alt="SonicFrame Logo" class="logo">
       <div><b>SONICFRAME</b><small>A PROJECT OF TETRABYTE</small></div>
     </a>
     <div class="navlinks"><a href="studio.html">Studio</a><a href="motion.html">Modules</a><a href="chatbot.html">AI
-        Co-Pilot</a><button class="btn" id="navAuth">Sign In / Register</button></div>
+        Co-Pilot</a><button class="btn" id="navAuth" aria-label="Sign In or Register">Sign In / Register</button></div>
   </nav>
-  <main>
-    <section class="hero">
+  <main id="main-content" tabindex="-1">
+    <section class="hero" aria-label="Platform introduction">
       <div>
         <div class="eyebrow">TETRABYTE PRESENTS · VISUAL-TO-AUDIO INTELLIGENCE</div>
         <h1>Give every<br>frame a <span>sound.</span></h1>
         <p>SonicFrame transforms silent animation into an expressive soundscape. Analyze movement, identify impact
           moments and shape synchronized procedural audio through one creative workspace.</p><a class="cta" href="#"
-          onclick="openAuth();return false">ENTER SONICFRAME ↗</a><a class="cta secondary" href="foley.html">EXPLORE
+          onclick="openAuth();return false" aria-label="Enter SonicFrame Studio">ENTER SONICFRAME ↗</a><a class="cta secondary" href="foley.html" aria-label="Explore Foley design">EXPLORE
           FOLEY</a>
-        <p style="font:9px 'DM Mono';letter-spacing:1px;margin-top:25px">MOTION ANALYSIS / FOLEY DESIGN / ADAPTIVE SCORE
+        <p style="font:11px 'DM Mono';letter-spacing:1px;margin-top:25px">MOTION ANALYSIS / FOLEY DESIGN / ADAPTIVE SCORE
         </p>
       </div>
       <div class="visual" id="soundVisual" aria-label="Interactive audio waveform visualizer">
@@ -632,20 +713,20 @@
           SOUND</small>
       </div>
     </section>
-    <section class="cards"><a class="card" href="motion.html"><i>⌁</i><b>Motion Intelligence</b><small>Detect movement
-          energy and visual changes.</small></a><a class="card" href="foley.html"><i>♫</i><b>Foley & Sound
+    <section class="cards" aria-label="Feature modules"><a class="card" href="motion.html" aria-label="Motion Intelligence module"><i>⌁</i><b>Motion Intelligence</b><small>Detect movement
+          energy and visual changes.</small></a><a class="card" href="foley.html" aria-label="Foley and Sound Design module"><i>♫</i><b>Foley & Sound
           Design</b><small>Build procedural impacts and ambient layers.</small></a><a class="card"
-        href="timeline.html"><i>▤</i><b>Adaptive Timeline</b><small>Inspect frame-aligned audio cues.</small></a><a
-        class="card" href="mixer.html"><i>≋</i><b>Stem Mixer</b><small>Balance independent sound layers.</small></a>
+        href="timeline.html" aria-label="Adaptive Timeline module"><i>▤</i><b>Adaptive Timeline</b><small>Inspect frame-aligned audio cues.</small></a><a
+        class="card" href="mixer.html" aria-label="Stem Mixer module"><i>≋</i><b>Stem Mixer</b><small>Balance independent sound layers.</small></a>
     </section>
   </main>
-  <footer>SONICFRAME · A PROJECT OF TETRABYTE · CREATIVE AUDIO WORKSPACE</footer>
+  <footer role="contentinfo">SONICFRAME · A PROJECT OF TETRABYTE · CREATIVE AUDIO WORKSPACE</footer>
   <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="authTitle">
-    <div class="auth"><button class="close" id="authClose" aria-label="Close">×</button>
+    <div class="auth"><button class="close" id="authClose" aria-label="Close authentication modal">×</button>
       <div class="eyebrow">TETRABYTE ACCESS</div>
       <h2 id="authTitle">Welcome back</h2>
       <p class="authsub" id="authSub">Sign in to unlock the Studio, modules and AI Co-Pilot.</p><button type="button"
-        class="gbtn" id="googleBtn"><svg viewBox="0 0 48 48" aria-hidden="true">
+        class="gbtn" id="googleBtn" aria-label="Continue with Google"><svg viewBox="0 0 48 48" aria-hidden="true">
           <path fill="#EA4335"
             d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.2C12.4 13.6 17.7 9.5 24 9.5z" />
           <path fill="#4285F4"
@@ -656,15 +737,15 @@
             d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.6-5.9c-2.1 1.4-4.9 2.3-8.3 2.3-6.3 0-11.6-4.1-13.5-9.9l-7.9 6.2C6.5 42.6 14.6 48 24 48z" />
         </svg>Continue with Google</button>
       <div class="or"><span>OR USE YOUR EMAIL</span></div>
-      <div class="tabs"><button type="button" id="tabIn" class="on">Sign In</button><button type="button"
-          id="tabUp">Register</button></div>
-      <form id="authForm" novalidate><input id="authName" type="text" autocomplete="name" placeholder="Your name"
-          hidden><input id="authEmail" type="email" autocomplete="email" placeholder="Email address"><input
-          id="authPass" type="password" autocomplete="current-password" placeholder="Password"><input id="authPass2"
-          type="password" autocomplete="new-password" placeholder="Confirm password" hidden><button type="submit"
-          class="submit" id="authSubmit">Sign In ↗</button></form>
-      <div class="row2"><button type="button" class="linkbtn" id="forgotBtn">Forgot password?</button><button
-          type="button" class="linkbtn" id="resendBtn" hidden>Resend verification email</button></div>
+      <div class="tabs"><button type="button" id="tabIn" class="on" aria-label="Switch to Sign In">Sign In</button><button type="button"
+          id="tabUp" aria-label="Switch to Register">Register</button></div>
+      <form id="authForm" novalidate><input id="authName" type="text" autocomplete="name" placeholder="Your name" aria-label="Your full name"
+          hidden><input id="authEmail" type="email" autocomplete="email" placeholder="Email address" aria-label="Email address"><input
+          id="authPass" type="password" autocomplete="current-password" placeholder="Password" aria-label="Password"><input id="authPass2"
+          type="password" autocomplete="new-password" placeholder="Confirm password" aria-label="Confirm password" hidden><button type="submit"
+          class="submit" id="authSubmit" aria-label="Submit authentication">Sign In ↗</button></form>
+      <div class="row2"><button type="button" class="linkbtn" id="forgotBtn" aria-label="Forgot password">Forgot password?</button><button
+          type="button" class="linkbtn" id="resendBtn" aria-label="Resend verification email" hidden>Resend verification email</button></div>
       <div class="msgbox" id="authMsg" role="status" aria-live="polite" hidden></div>
       <p class="fine">Your account is handled by Google Firebase Authentication. SonicFrame never sees or stores your
         password.</p>
@@ -682,40 +763,73 @@
       var ov = $('overlay'), mode = 'in', busy = false, signedIn = false;
       var qs = new URLSearchParams(location.search);
 
-      function msg(text, kind) { var m = $('authMsg'); if (!text) { m.hidden = true; return } m.hidden = false; m.className = 'msgbox' + (kind ? ' ' + kind : ''); m.textContent = text }
+      function msg(text, kind, isHtml) {
+        var m = $('authMsg');
+        if (!text) { m.hidden = true; m.innerHTML = ''; return }
+        m.hidden = false;
+        m.className = 'msgbox' + (kind ? ' ' + kind : '');
+        if (isHtml) m.innerHTML = text;
+        else m.textContent = text;
+      }
       function setBusy(b) {
         busy = b;['googleBtn', 'authSubmit', 'tabIn', 'tabUp', 'forgotBtn', 'resendBtn'].forEach(function (i) { $(i).disabled = b });
-        if (!b && isLocked()) { $('authPass').disabled = true; $('authSubmit').disabled = true }
+        if (!b && mode === 'in' && isLocked()) { $('authPass').disabled = true; $('authSubmit').disabled = true }
       }
-      /* Lockout state mirrored from the server. The countdown is cosmetic: the
-         server refuses attempts on its own clock. */
-      var lockTimer = null, lockedUntil = 0;
-      function isLocked() { return lockedUntil > Date.now() }
+      /* Lockout state mirrored from local tracker and server. */
+      var lockTimer = null;
       function pad2(n) { return (n < 10 ? '0' : '') + n }
+      function formatTime(sec) {
+        var m = Math.floor(sec / 60);
+        var s = sec % 60;
+        return pad2(m) + ':' + pad2(s);
+      }
+      function getLockRemaining() {
+        if (A && A.getLockInfo) {
+          var em = $('authEmail') ? $('authEmail').value.trim() : '';
+          var info = A.getLockInfo(em);
+          if (info && info.isLocked) return info.retryAfter;
+        }
+        return 0;
+      }
+      function isLocked() { return getLockRemaining() > 0 }
       function renderLock() {
-        var left = Math.ceil((lockedUntil - Date.now()) / 1000);
+        var left = getLockRemaining();
         if (left <= 0) { unlock(); return }
         if (mode === 'up') return; /* registering is not a sign-in attempt */
-        $('authPass').disabled = true; $('authSubmit').disabled = true;
-        msg('Too many failed attempts. Please try again in ' + pad2(Math.floor(left / 60)) + ':' + pad2(left % 60) + ' (5 minutes).', 'err');
+        $('authPass').disabled = true;
+        $('authPass').value = '';
+        $('authPass').placeholder = 'Sign in locked (' + formatTime(left) + ')';
+        $('authSubmit').disabled = true;
+        var timerHtml = 'Too many failed attempts. Try again in <span class="msgbox-timer">⏱ ' + formatTime(left) + '</span>';
+        msg(timerHtml, 'err', true);
       }
       function lockFor(seconds) {
-        lockedUntil = Date.now() + Math.max(1, seconds || 300) * 1000;
-        $('authPass').disabled = true; $('authSubmit').disabled = true;
+        if (lockTimer) clearInterval(lockTimer);
         renderLock();
-        if (!lockTimer) lockTimer = setInterval(renderLock, 1000);
+        lockTimer = setInterval(function () {
+          var left = getLockRemaining();
+          if (left <= 0) { unlock(); } else { renderLock(); }
+        }, 1000);
       }
       function unlock() {
-        lockedUntil = 0;
         if (lockTimer) { clearInterval(lockTimer); lockTimer = null }
-        $('authPass').disabled = false;
-        if (!busy) $('authSubmit').disabled = false;
-        msg('You can sign in again now.', 'ok');
+        if (A && A.clearLock) A.clearLock($('authEmail').value.trim());
+        if (mode === 'in') {
+          $('authPass').disabled = false;
+          $('authPass').placeholder = 'Password';
+          if (!busy) $('authSubmit').disabled = false;
+          msg('You can sign in again now.', 'ok');
+        }
       }
       function checkLock() {
         var email = $('authEmail').value.trim();
-        if (!email || !A || !A.lockStatus) return;
-        A.lockStatus(email).then(function (s) { if (s && s.locked) lockFor(s.retryAfter) });
+        if (isLocked()) {
+          lockFor(getLockRemaining());
+          return;
+        }
+        if (email && A && A.lockStatus) {
+          A.lockStatus(email).then(function (s) { if (s && s.locked) lockFor(s.retryAfter) });
+        }
       }
       function setMode(m) {
         mode = m; var up = m === 'up';
@@ -726,15 +840,44 @@
         $('authSub').textContent = up ? 'Register to unlock the Studio, modules and AI Co-Pilot.' : 'Sign in to unlock the Studio, modules and AI Co-Pilot.';
         $('authSubmit').textContent = up ? 'Create account \u2197' : 'Sign In \u2197';
         $('forgotBtn').hidden = up; $('resendBtn').hidden = true; msg('');
-        if (up) { $('authPass').disabled = false; $('authSubmit').disabled = false }
-        else if (isLocked()) renderLock();
+        if (up) {
+          /* Registration is never locked */
+          $('authPass').disabled = false;
+          $('authPass').placeholder = 'Password';
+          $('authPass2').disabled = false;
+          $('authSubmit').disabled = false;
+        } else {
+          /* Sign-in mode */
+          if (isLocked()) {
+            lockFor(getLockRemaining());
+          } else {
+            $('authPass').disabled = false;
+            $('authPass').placeholder = 'Password';
+            $('authSubmit').disabled = false;
+          }
+        }
       }
-      function open(m) { ov.classList.add('show'); setMode(m || 'in'); checkLock(); setTimeout(function () { try { $('googleBtn').focus() } catch (e) { } }, 30) }
+      function open(m) {
+        ov.classList.add('show');
+        setMode(m || 'in');
+        checkLock();
+        setTimeout(function () {
+          try {
+            if (!isLocked()) $('googleBtn').focus();
+            else $('authEmail').focus();
+          } catch (e) { }
+        }, 30);
+      }
       function close() { ov.classList.remove('show') }
       function go() { location.href = A.nextUrl() }
       function fail(e) {
-        if (e && e.code === 'sf/locked') { $('resendBtn').hidden = true; lockFor(e.retryAfter); return }
-        msg(A.friendlyError(e), 'err'); if (e && e.code === 'sf/unverified') $('resendBtn').hidden = false
+        if (e && e.code === 'sf/locked') { $('resendBtn').hidden = true; lockFor(e.retryAfter || 300); return }
+        if (e && e.attemptsRemaining !== undefined && e.attemptsRemaining > 0) {
+          msg('Email or password is incorrect. (' + e.attemptsRemaining + (e.attemptsRemaining === 1 ? ' attempt left)' : ' attempts left)'), 'err');
+        } else {
+          msg(A.friendlyError(e), 'err');
+        }
+        if (e && e.code === 'sf/unverified') $('resendBtn').hidden = false;
       }
 
       window.openAuth = function (m) { if (signedIn) { go(); return } open(m) };
@@ -818,6 +961,7 @@
       }
     })();
   </script>
+  <script type="module" src="sonicframe-copilot.js"></script>
   <script src="sonicframe-chat-widget.js" defer></script>
 </body>
 
