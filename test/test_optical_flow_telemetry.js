@@ -18,15 +18,15 @@
 
 import assert from 'node:assert';
 import { Worker } from 'node:worker_threads';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import path from 'node:path';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const workerPath = path.resolve(__dirname, '../opticalFlow.worker.js');
 const telemetryPath = path.resolve(__dirname, '../sonicframe-telemetry.js');
 
-await import(workerPath);
-await import(telemetryPath);
+await import(pathToFileURL(workerPath).href);
+await import(pathToFileURL(telemetryPath).href);
 
 const {
   OpticalFlowEngine,
@@ -403,7 +403,7 @@ await testAsync('Worker Thread: Protocol exchange (INIT, PROCESS_FRAME, FINISH)'
   const workerCode = `
 import { parentPort } from 'node:worker_threads';
 globalThis.parentPort = parentPort;
-import '${workerPath}';
+import '${pathToFileURL(workerPath).href}';
 
 parentPort.on('message', (msg) => {
   globalThis.SonicFrameWorkerEngine.handleMessage(msg);
