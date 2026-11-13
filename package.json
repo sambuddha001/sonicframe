@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "typecheck": "tsc --noEmit",
     "start": "node server.js",
     "start:python": "python3 -m http.server 8000",
     "test": "node test/test_optical_flow_telemetry.js && node test/orchestrator-test.js && node test_sonicframe_dsp.js",
@@ -13,5 +16,10 @@
   "dependencies": {
     "@google/generative-ai": "^0.24.0",
     "@netlify/blobs": "^11.1.9"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8"
   }
 }
