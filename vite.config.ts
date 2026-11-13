@@ -9,9 +9,9 @@ export default defineConfig({
     emptyOutDir: true,
     rollupOptions: {
       input: {
-        studio: resolve(__dirname, 'studio.html'),
-        index: resolve(__dirname, 'index.html'),
-        chatbot: resolve(__dirname, 'chatbot.html'),
+        studio: resolve(process.cwd(), 'studio.html'),
+        index: resolve(process.cwd(), 'index.html'),
+        chatbot: resolve(process.cwd(), 'chatbot.html'),
       },
     },
   },
