@@ -1,5 +1,7 @@
 # Dependencies
 node_modules/
+dist/
+*.tsbuildinfo
 
 # Environment variables
 .env
@@ -14,3 +16,6 @@ yarn-error.log*
 # Operating System Files
 .DS_Store
 Thumbs.db
+
+# Documents & PDFs
+*.pdf

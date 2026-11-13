@@ -6,18 +6,18 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-const SYSTEM_PROMPT = `You are SonicFrame AI Co-Pilot, the creative assistant built into the SonicFrame platform by Tetrabyte.
+const SYSTEM_PROMPT = `You are SonicFrame AI Co-Pilot, the creative sound designer built into the SonicFrame platform by Tetrabyte.
 
-SonicFrame is a browser-based sound-design and audio post-production studio that lets users:
-- Upload video clips and run real-time motion analysis (detecting impacts, scene shifts, and movement pulses).
-- Auto-generate synchronised Foley cues, ambient textures, and rhythmic pulses from the motion data.
-- Mix, layer, and fine-tune the generated audio stems inside a built-in mixer and timeline.
+SonicFrame is an in-browser sound-design and audio post-production studio that lets users:
+- Analyze video clips with real-time optical flow (detecting impacts, scene shifts, and movement pulses).
+- Auto-generate synchronised Foley cues, ambient textures, and rhythmic pulses from motion telemetry.
+- Mix, layer, and fine-tune procedural audio stems inside a built-in mixer and timeline.
 
 Your role:
 - Help users plan sound design, understand motion-analysis results, pick Foley strategies, and navigate the SonicFrame studio workflow.
-- Give practical, creative suggestions for audio post-production.
-- Be concise, friendly, and knowledgeable about film sound, Foley art, sound effects, and music production.
-- If the user asks something unrelated to audio/sound/video, answer briefly but gently steer back to your domain.
+- Give practical, creative suggestions for audio post-production and scoring.
+- If asked to alter cue parameters (e.g. footsteps, decay, tension, key), explain the exact parameter adjustments clearly.
+- Be concise, friendly, and knowledgeable about film sound, physical modeling, and composition.
 
 Keep replies focused and under 300 words unless the user asks for more detail.`;
 
@@ -35,19 +35,23 @@ export default async (req) => {
   }
 
   try {
-    const nvidiaKey =
-      process.env.NVIDIA_API_KEY ||
-      (process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.startsWith("nvapi-")
-        ? process.env.GEMINI_API_KEY
-        : null);
-    const geminiKey =
-      process.env.GEMINI_API_KEY && !process.env.GEMINI_API_KEY.startsWith("nvapi-")
-        ? process.env.GEMINI_API_KEY
-        : null;
+    // Provider-agnostic configuration without key-prefix sniffing
+    const rawProvider = process.env.LLM_PROVIDER?.toLowerCase();
+    const provider =
+      rawProvider ||
+      (process.env.NVIDIA_API_KEY ? "nvidia" :
+       process.env.OPENAI_API_KEY ? "openai" :
+       process.env.GEMINI_API_KEY ? "google" : null);
 
-    if (!nvidiaKey && !geminiKey) {
+    const apiKey =
+      process.env.LLM_API_KEY ||
+      (provider === "nvidia" ? process.env.NVIDIA_API_KEY :
+       provider === "openai" ? process.env.OPENAI_API_KEY :
+       provider === "google" ? process.env.GEMINI_API_KEY : null);
+
+    if (!apiKey || !provider) {
       throw new Error(
-        "No AI API key configured. Add NVIDIA_API_KEY or GEMINI_API_KEY to your environment variables."
+        "No AI API key configured. Set LLM_API_KEY, GEMINI_API_KEY, OPENAI_API_KEY, or NVIDIA_API_KEY in your environment variables."
       );
     }
 
@@ -61,13 +65,14 @@ export default async (req) => {
       });
     }
 
-    // --- Path A: NVIDIA API (e.g. nvapi-...) ---
-    if (nvidiaKey) {
-      const model = process.env.NVIDIA_MODEL || "google/diffusiongemma-26b-a4b-it";
+    // --- Path A: NVIDIA / OpenAI-compatible endpoint ---
+    if (provider === "nvidia") {
+      // Verified model name on build.nvidia.com
+      const model = process.env.LLM_MODEL || process.env.NVIDIA_MODEL || "meta/llama-3.1-70b-instruct";
       const nvRes = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${nvidiaKey}`,
+          "Authorization": `Bearer ${apiKey}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
@@ -100,10 +105,50 @@ export default async (req) => {
       );
     }
 
-    // --- Path B: Google Gemini API ---
-    const genAI = new GoogleGenerativeAI(geminiKey);
+    // --- Path B: OpenAI Endpoint ---
+    if (provider === "openai") {
+      const model = process.env.LLM_MODEL || "gpt-4o-mini";
+      const openAiRes = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model,
+          messages: [
+            { role: "system", content: SYSTEM_PROMPT },
+            { role: "user", content: message.trim() },
+          ],
+          temperature: 0.3,
+          max_tokens: 350,
+        }),
+      });
+
+      if (!openAiRes.ok) {
+        const errText = await openAiRes.text();
+        throw new Error(`OpenAI API HTTP ${openAiRes.status}: ${errText}`);
+      }
+
+      const openAiData = await openAiRes.json();
+      const reply =
+        openAiData.choices?.[0]?.message?.content?.trim() ||
+        "Sorry, I could not generate a response.";
+
+      return new Response(
+        JSON.stringify({ reply, model, provider: "openai" }),
+        {
+          status: 200,
+          headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    // --- Path C: Google Gemini API ---
+    const modelName = process.env.LLM_MODEL || "gemini-1.5-flash";
+    const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
+      model: modelName,
       systemInstruction: SYSTEM_PROMPT,
     });
 
@@ -113,7 +158,7 @@ export default async (req) => {
       "Sorry, I could not generate a response. Please try again.";
 
     return new Response(
-      JSON.stringify({ reply, model: "gemini-1.5-flash", provider: "google" }),
+      JSON.stringify({ reply, model: modelName, provider: "google" }),
       {
         status: 200,
         headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
@@ -125,9 +170,7 @@ export default async (req) => {
     const statusCode = error?.status || error?.httpStatusCode || 500;
     let userMessage = error.message || "Internal server error";
 
-    if (error.message?.includes("nvapi") || error.message?.includes("NVIDIA")) {
-      userMessage = error.message;
-    } else if (statusCode === 400 || error.message?.includes("API_KEY_INVALID")) {
+    if (statusCode === 400 || error.message?.includes("API_KEY_INVALID")) {
       userMessage = "AI API key is invalid. Please check your environment variables.";
     } else if (statusCode === 429) {
       userMessage = "Rate limit exceeded. Please wait a moment and try again.";

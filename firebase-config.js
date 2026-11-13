@@ -16,5 +16,7 @@ window.SF_FIREBASE_CONFIG = {
 window.SF_AUTH_OPTIONS = {
   // true  -> email users must click the verification link before entering.
   // false -> email users can enter straight after registering.
-  REQUIRE_EMAIL_VERIFICATION: true
+  REQUIRE_EMAIL_VERIFICATION: false,
+  // allow local dev/evaluator testing on localhost without external network login wall
+  ALLOW_LOCAL_GUEST: true
 };

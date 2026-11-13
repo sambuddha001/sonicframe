@@ -465,10 +465,23 @@ export default async (req) => {
   const telemetry = body.telemetry || {};
   const mood = typeof body.mood === "string" ? body.mood : "cinematic_dark";
 
-  // Check API keys
-  const nvidiaKey = process.env.NVIDIA_API_KEY || (process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.startsWith("nvapi-") ? process.env.GEMINI_API_KEY : null);
-  const geminiKey = process.env.GEMINI_API_KEY && !process.env.GEMINI_API_KEY.startsWith("nvapi-") ? process.env.GEMINI_API_KEY : null;
-  const openaiKey = process.env.OPENAI_API_KEY;
+  // Check API keys and provider (zero key-sniffing, provider-agnostic)
+  const rawProvider = process.env.LLM_PROVIDER ? process.env.LLM_PROVIDER.toLowerCase() : null;
+  const provider =
+    rawProvider ||
+    (process.env.NVIDIA_API_KEY ? "nvidia" :
+     process.env.OPENAI_API_KEY ? "openai" :
+     process.env.GEMINI_API_KEY ? "google" : null);
+
+  const apiKey =
+    process.env.LLM_API_KEY ||
+    (provider === "nvidia" ? process.env.NVIDIA_API_KEY :
+     provider === "openai" ? process.env.OPENAI_API_KEY :
+     provider === "google" ? process.env.GEMINI_API_KEY : null);
+
+  const nvidiaKey = provider === "nvidia" ? apiKey : null;
+  const geminiKey = provider === "google" ? apiKey : null;
+  const openaiKey = provider === "openai" ? apiKey : null;
 
   if (!nvidiaKey && !geminiKey && !openaiKey) {
     // Graceful offline fallback: Generate deterministic cue sheet
@@ -492,7 +505,7 @@ export default async (req) => {
     let rawCueSheet = null;
 
     if (nvidiaKey) {
-      const model = process.env.NVIDIA_MODEL || "google/diffusiongemma-26b-a4b-it";
+      const model = process.env.NVIDIA_MODEL || "meta/llama-3.1-70b-instruct";
       const prompt = `Generate a frame-locked scoring cue sheet for this silent video telemetry. Output strictly valid JSON conforming to the schema.
 Desired Mood: ${mood}
 Duration: ${telemetry.durationSeconds || 15}s
