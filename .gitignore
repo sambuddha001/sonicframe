@@ -22,5 +22,9 @@ yarn-error.log*
 .DS_Store
 Thumbs.db
 
+# Test outputs & Playwright artifacts
+test-results/
+playwright-report/
+
 # Documents & PDFs
 *.pdf
