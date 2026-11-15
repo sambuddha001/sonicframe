@@ -267,7 +267,7 @@ Click "EXPORT WAV" to generate and download the production-ready 24-bit 48kHz WA
 
 ## 8. Environment Variables (Optional Serverless Cloud LLM)
 
-When deploying to Netlify or configuring cloud LLM enrichment, provide any of the following environment variables:
+When deploying to Vercel or Netlify, or when configuring cloud LLM enrichment, provide any of the following environment variables:
 
 | Variable | Description | Default |
 | :--- | :--- | :--- |
@@ -279,7 +279,41 @@ When deploying to Netlify or configuring cloud LLM enrichment, provide any of th
 
 ---
 
-## 9. Hackathon Track Differentiators
+## 9. Deploying to Vercel
+
+SonicFrame is pre-configured for instant zero-configuration deployment to [Vercel](https://vercel.com) via `vercel.json` and universal serverless API handlers in `api/`:
+
+### Option A: 1-Click Import via Vercel Dashboard
+1. Go to [vercel.com/new](https://vercel.com/new).
+2. Import the repository `https://github.com/sambuddha001/sonicframe`.
+3. Configure the project settings:
+   - **Framework Preset**: `Vite`
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+4. *(Optional)* Add your cloud LLM keys under **Environment Variables** (`GEMINI_API_KEY`, `OPENAI_API_KEY`, or `NVIDIA_API_KEY`).
+5. Click **Deploy**.
+
+### Option B: Deploy via Vercel CLI
+```bash
+# Install Vercel CLI (if not already installed)
+npm i -g vercel
+
+# Authenticate & deploy preview
+vercel
+
+# Deploy directly to production
+vercel --prod
+```
+
+### Architecture on Vercel
+- **Multi-Page Static Output**: All 7 studio views (`index.html`, `studio.html`, `chatbot.html`, `motion.html`, `foley.html`, `timeline.html`, `mixer.html`) are bundled by Vite into `dist/` and served over Vercel's global Edge CDN with immutable hashed asset caching.
+- **Universal Serverless Functions**: Located in `api/chat.js`, `api/orchestrate.js`, and `api/login-attempts.js`. They wrap Web Request/Response handlers with dual Node.js/Edge runtime compatibility.
+- **Transparent Rewrites**: `vercel.json` routes `/.netlify/functions/:path*` to `/api/:path*`, ensuring all legacy and client-side endpoints work out of the box without changing frontend code.
+- **Offline / Edge Autonomy**: If no cloud API keys are configured, SonicFrame operates 100% autonomously using its client-side DSP physical modeling and deterministic cue-sheet engine.
+
+---
+
+## 10. Hackathon Track Differentiators
 
 ### Track 1: Soundscapes & Composition
 - **Transparent Multi-Stem Control**: Not a black-box audio generator. Creators inspect, scrub, and isolate 4 distinct procedural stems (Atmosphere, Motion Pulse, Foley Impact, Texture Shimmer).
@@ -293,7 +327,7 @@ When deploying to Netlify or configuring cloud LLM enrichment, provide any of th
 
 ---
 
-## 10. License & Acknowledgments
+## 11. License & Acknowledgments
 
 - **Codebase License**: MIT License ([LICENSE](LICENSE))
 - **Audio Synthesizer Models & Algorithms**: CC0 1.0 Universal Public Domain ([LICENSES.md](LICENSES.md))

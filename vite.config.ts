@@ -9,9 +9,13 @@ export default defineConfig({
     emptyOutDir: true,
     rollupOptions: {
       input: {
-        studio: resolve(process.cwd(), 'studio.html'),
         index: resolve(process.cwd(), 'index.html'),
+        studio: resolve(process.cwd(), 'studio.html'),
         chatbot: resolve(process.cwd(), 'chatbot.html'),
+        motion: resolve(process.cwd(), 'motion.html'),
+        foley: resolve(process.cwd(), 'foley.html'),
+        timeline: resolve(process.cwd(), 'timeline.html'),
+        mixer: resolve(process.cwd(), 'mixer.html'),
       },
     },
   },
@@ -23,6 +27,10 @@ export default defineConfig({
     open: false,
     proxy: {
       '/.netlify/functions': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+      '/api': {
         target: 'http://localhost:8000',
         changeOrigin: true,
       },
