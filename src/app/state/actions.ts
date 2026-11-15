@@ -72,8 +72,12 @@ export class AppActions {
 
     const videoEl = this.videoPlayer.videoElement;
     const duration = video.durationSeconds || 15;
-    const fps = video.fps || 30;
-    const totalFrames = Math.max(2, Math.ceil(duration * fps));
+    
+    // Read sampling interval from UI controls (default 100ms = 10Hz per Section 5.1 of Architecture Spec)
+    const samplingEl = document.getElementById('sampling') as HTMLSelectElement | null;
+    const samplingMs = samplingEl ? parseInt(samplingEl.value || '100', 10) : 100;
+    const sampleRateHz = Math.max(5, Math.min(30, 1000 / samplingMs));
+    const totalFrames = Math.max(2, Math.ceil(duration * sampleRateHz));
 
     const W = 160;
     const H = 90;
@@ -84,21 +88,25 @@ export class AppActions {
     if (!ctx) throw new Error('Could not create offscreen context');
 
     const engine = new OpticalFlowEngine();
-    engine.init({ width: W, height: H, fps });
+    engine.init({ width: W, height: H, fps: sampleRateHz });
 
     const vectors: TelemetryVector[] = [];
 
     // Frame extraction loop with cooperative yields to keep UI unblocked
     for (let f = 0; f < totalFrames; f++) {
-      const targetTime = Math.min(duration - 0.001, f / fps);
+      const targetTime = Math.min(duration - 0.001, f / sampleRateHz);
 
-      // Seek cleanly
+      // Seek cleanly with fallback timeout to prevent stalls in headless environments
       await new Promise<void>((resolve) => {
-        if (Math.abs(videoEl.currentTime - targetTime) < 0.01) {
+        if (Math.abs(videoEl.currentTime - targetTime) < 0.02) {
           resolve();
           return;
         }
-        videoEl.addEventListener('seeked', () => resolve(), { once: true });
+        const timer = setTimeout(() => resolve(), 100);
+        videoEl.addEventListener('seeked', () => {
+          clearTimeout(timer);
+          resolve();
+        }, { once: true });
         videoEl.currentTime = targetTime;
       });
 
